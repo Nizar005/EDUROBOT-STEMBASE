@@ -54,13 +54,13 @@ void getsensor(){
 }
 
 int compare(){
-  if(ranging(red, 52, 82) && ranging(green, 100, 130) && ranging(blue, 25, 40)){
+  if(ranging(red, 52, 82) && ranging(green, 100, 130) && ranging(blue, 73, 103)){
     return (1);
   }
-  else if(ranging(red, 70, 90) && ranging(green, 80, 100) && ranging(blue, 60, 80)){
+  else if(ranging(red, 196, 226) && ranging(green, 26, 56) && ranging(blue, 27, 57)){
     return (2);
   }
-  else if(ranging(red, 80, 100) && ranging(green, 70, 90) && ranging(blue, 60, 80)){
+  else if(ranging(red, 163, 193) && ranging(green, 43, 73) && ranging(blue, 36, 66)){
     return (3);
   }
   else{
