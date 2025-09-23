@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include "Adafruit_TCS34725.h"
 
+
 int ins[20]; // instruction model
 int insstep = 0;  //instructions step
 float red, green, blue; //sensor value
@@ -9,6 +10,10 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 
 void setup() {
   Serial.begin(9600);
+
+  pinMode(13, INPUT_PULLUP);
+  pinMode(14, INPUT_PULLUP);
+  pinMode(15, INPUT_PULLUP);
 
   //start tcs sensor and confirm
   if (tcs.begin()) {
@@ -23,21 +28,23 @@ void setup() {
 
 
 void loop() {
-  getsensor();
-  delay(100);
-  intoarray(compare());
-  Serial.println(red);
-  Serial.println(green);
-  Serial.println(blue);
-  Serial.println("");
-  Serial.println(compare());
-  Serial.println("");
-
-  for (int i = 0; i < 20; i++) {
-    Serial.print(ins[i]);
-    Serial.print(" ");
+  if(digitalRead(14) == 0){
+    getsensor();
+    delay(100);
+    intoarray(compare());
+    Serial.println(red);
+    Serial.println(green);
+    Serial.println(blue);
+    Serial.println("");
+    Serial.println(compare());
+    Serial.println("");
+    for (int i = 0; i < 20; i++) {
+      Serial.print(ins[i]);
+      Serial.println("");
+    }
+    Serial.println("");
+    delay(500);
   }
-  delay(5000);
 }
 
 void getsensor(){
@@ -52,13 +59,13 @@ void getsensor(){
 }
 
 int compare(){
-  if(ranging(red, 210, 230) && ranging(green, 25, 40) && ranging(blue, 25, 40)){
+  if(ranging(red, 52, 82) && ranging(green, 100, 130) && ranging(blue, 73, 103)){
     return (1);
   }
-  else if(ranging(red, 70, 90) && ranging(green, 80, 100) && ranging(blue, 60, 80)){
+  else if(ranging(red, 196, 226) && ranging(green, 26, 56) && ranging(blue, 27, 57)){
     return (2);
   }
-  else if(ranging(red, 80, 100) && ranging(green, 70, 90) && ranging(blue, 60, 80)){
+  else if(ranging(red, 163, 193) && ranging(green, 43, 73) && ranging(blue, 36, 66)){
     return (3);
   }
   else{
@@ -67,7 +74,7 @@ int compare(){
 }
 
 void intoarray(int data){
-  if (insstep < 50) {
+  if (insstep < 20) {
     ins[insstep] = data;
     insstep++;
   }
@@ -75,6 +82,6 @@ void intoarray(int data){
 
 
 
-bool ranging(float in, float max, float min){
-  return (in >= max && in <= min);
+bool ranging(float in, float min, float max){
+  return (in >= min && in <= max);
 }
