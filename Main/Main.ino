@@ -11,6 +11,10 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 void setup() {
   Serial.begin(9600);
 
+  pinMode(13, INPUT_PULLUP);
+  pinMode(14, INPUT_PULLUP);
+  pinMode(15, INPUT_PULLUP);
+
   //start tcs sensor and confirm
   if (tcs.begin()) {
     Serial.println("Found sensor");
@@ -24,22 +28,23 @@ void setup() {
 
 
 void loop() {
-  getsensor();
-  delay(100);
-  intoarray(compare());
-  Serial.println(red);
-  Serial.println(green);
-  Serial.println(blue);
-  Serial.println("");
-  Serial.println(compare());
-  Serial.println("");
-
-  if() {
-    Serial.print(ins[i]);
-    Serial.print(" ");
+  if(digitalRead(14) == 0){
+    getsensor();
+    delay(100);
+    intoarray(compare());
+    Serial.println(red);
+    Serial.println(green);
+    Serial.println(blue);
+    Serial.println("");
+    Serial.println(compare());
+    Serial.println("");
+    for (int i = 0; i < 20; i++) {
+      Serial.print(ins[i]);
+      Serial.println("");
+    }
+    Serial.println("");
+    delay(500);
   }
-  Serial.println("");
-  delay(5000);
 }
 
 void getsensor(){
