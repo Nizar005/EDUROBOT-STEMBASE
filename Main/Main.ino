@@ -23,21 +23,23 @@ void setup() {
 
 
 void loop() {
-  getsensor();
-  delay(100);
-  intoarray(compare());
-  Serial.println(red);
-  Serial.println(green);
-  Serial.println(blue);
-  Serial.println("");
-  Serial.println(compare());
-  Serial.println("");
-
-  for (int i = 0; i < 20; i++) {
-    Serial.print(ins[i]);
-    Serial.print(" ");
+  if(digitalRead(14) == 0){
+    getsensor();
+    delay(100);
+    intoarray(compare());
+    Serial.println(red);
+    Serial.println(green);
+    Serial.println(blue);
+    Serial.println("");
+    Serial.println(compare());
+    Serial.println("");
+    for (int i = 0; i < 20; i++) {
+      Serial.print(ins[i]);
+      Serial.print("");
+    }
+    Serial.println("");
+    delay(500);
   }
-  delay(5000);
 }
 
 void getsensor(){
@@ -52,13 +54,13 @@ void getsensor(){
 }
 
 int compare(){
-  if(ranging(red, 210, 230) && ranging(green, 25, 40) && ranging(blue, 25, 40)){
+  if(ranging(red, 89, 119) && ranging(green, 72, 102) && ranging(blue, 58, 88)){ //blue
     return (1);
   }
-  else if(ranging(red, 70, 90) && ranging(green, 80, 100) && ranging(blue, 60, 80)){
+  else if(ranging(red, 136, 166) && ranging(green, 47, 77) && ranging(blue, 39, 79)){ //red
     return (2);
   }
-  else if(ranging(red, 80, 100) && ranging(green, 70, 90) && ranging(blue, 60, 80)){
+  else if(ranging(red, 124, 154) && ranging(green, 63, 93) && ranging(blue, 31, 61)){ // yellow
     return (3);
   }
   else{
@@ -73,8 +75,6 @@ void intoarray(int data){
   }
 }
 
-
-
-bool ranging(float in, float max, float min){
-  return (in >= max && in <= min);
+bool ranging(float in, float min, float max){
+  return (in >= min && in <= max);
 }
