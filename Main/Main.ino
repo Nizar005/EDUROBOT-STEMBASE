@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include "Adafruit_TCS34725.h"
 
+
 int ins[20]; // instruction model
 int insstep = 0;  //instructions step
 float red, green, blue; //sensor value
@@ -9,6 +10,10 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 
 void setup() {
   Serial.begin(9600);
+
+  pinMode(13, INPUT_PULLUP);
+  pinMode(14, INPUT_PULLUP);
+  pinMode(15, INPUT_PULLUP);
 
   //start tcs sensor and confirm
   if (tcs.begin()) {
@@ -69,7 +74,7 @@ int compare(){
 }
 
 void intoarray(int data){
-  if (insstep < 50) {
+  if (insstep < 20) {
     ins[insstep] = data;
     insstep++;
   }
