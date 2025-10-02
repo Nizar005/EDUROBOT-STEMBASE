@@ -10,15 +10,15 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 
 void setup() {
   Serial.begin(9600);
-
+  //pb
   pinMode(13, INPUT_PULLUP);
   pinMode(14, INPUT_PULLUP);
   pinMode(15, INPUT_PULLUP);
-
-  pinMode(16, OUTPUT);
-  pinMode(17, OUTPUT);
-  pinMode(18, OUTPUT);
-  pinMode(19, OUTPUT);
+  //motor
+  pinMode(16, OUTPUT); //motor in1-motor1
+  pinMode(17, OUTPUT); //motor in2-motor1
+  pinMode(18, OUTPUT); //motor in3-motor2
+  pinMode(19, OUTPUT); //motor in4-motor2
 
   //start tcs sensor and confirm
   if (tcs.begin()) {
@@ -33,41 +33,67 @@ void setup() {
 
 
 void loop() {
- analogWrite (16, 127);
- analogWrite (17, 127);
- analogWrite (18, 127);
- analogWrite (19, 127);
+  if(digitalRead(13) == 0){
+    scan();
+  }
+  else if(digitalRead(14) == 0){
+    for(int i = 0; i < 20; i++){
+      int x = ins[i];
+      if(x == 1){
+        analogWrite(16, 100);
+        analogWrite(17, 0);
+        analogWrite(18, 100);
+        analogWrite(19, 0);
+        delay(2000);
+      }
+      else if(x == 2){
+        analogWrite(16, 100);
+        analogWrite(17, 0);
+        analogWrite(18, 0);
+        analogWrite(19, 0);
+        delay(1000);
+      }
+      else if(x == 3){
+        analogWrite(16, 0);
+        analogWrite(17, 0);
+        analogWrite(18, 100);
+        analogWrite(19, 0);
+        delay(1000);
+      }
+      else if(x == 0){
+       analogWrite(16, 0);
+       analogWrite(17, 0);
+       analogWrite(18, 0);
+       analogWrite(19, 0);
+       break;
+      }
+    }
+  }
 }
 
 
 void scan(){
-  if(digitalRead(14) == 0){
-    getsensor();
-    delay(100);
-    intoarray(compare());
-    Serial.println(red);
-    Serial.println(green);
-    Serial.println(blue);
-    Serial.println("");
-    Serial.println(compare());
-    Serial.println("");
-    for (int i = 0; i < 20; i++) {
-      Serial.print(ins[i]);
-      Serial.print("");
-    }
-    Serial.println("");
-    delay(500);
+  getsensor();
+  delay(100);
+  intoarray(compare());
+  //Serial.println(red);
+  //Serial.println(green);
+  //Serial.println(blue);
+  //Serial.println("");
+  //Serial.println(compare());
+  //Serial.println("");
+  for (int i = 0; i < 20; i++) {
+    Serial.print(ins[i]);
+    Serial.print("");
   }
+  Serial.println("");
+  delay(500);
 }
 
 void getsensor(){
-  
   tcs.setInterrupt(false);  // turn on LED
-
   delay(60);  // takes 50ms to read
-
   tcs.getRGB(&red, &green, &blue);
-  
   tcs.setInterrupt(true);  // turn off LED
 }
 
