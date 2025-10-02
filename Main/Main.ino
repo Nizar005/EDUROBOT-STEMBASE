@@ -15,6 +15,11 @@ void setup() {
   pinMode(14, INPUT_PULLUP);
   pinMode(15, INPUT_PULLUP);
 
+  pinMOde(16, OUTPUT);
+  pinMOde(17, OUTPUT);
+  pinMOde(18, OUTPUT);
+  pinMOde(19, OUTPUT);
+
   //start tcs sensor and confirm
   if (tcs.begin()) {
     Serial.println("Found sensor");
@@ -28,6 +33,12 @@ void setup() {
 
 
 void loop() {
+ digitalWrite (16, HIGH);
+ digitalWrite (17, LOW);
+ digitalWrite (18, HIGH);
+ digitalWrite (19, LOW);
+}
+void scan(){
   if(digitalRead(14) == 0){
     getsensor();
     delay(100);
