@@ -44,21 +44,21 @@ void loop() {
         analogWrite(17, 0);
         analogWrite(18, 100);
         analogWrite(19, 0);
-        delay(2000);
+        delay(1000);
       }
       else if(x == 2){
-        analogWrite(16, 100);
-        analogWrite(17, 0);
-        analogWrite(18, 0);
+        analogWrite(16, 0);
+        analogWrite(17, 80);
+        analogWrite(18, 80);
         analogWrite(19, 0);
-        delay(1000);
+        delay(2000);
       }
       else if(x == 3){
         analogWrite(16, 0);
         analogWrite(17, 0);
         analogWrite(18, 100);
         analogWrite(19, 0);
-        delay(1000);
+        delay(700);
       }
       else if(x == 0){
        analogWrite(16, 0);
