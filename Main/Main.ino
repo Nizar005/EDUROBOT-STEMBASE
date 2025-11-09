@@ -271,12 +271,12 @@ void scan(){
   getsensor();
   delay(100);
   intoarray(compare());
-  //Serial.println(red);
-  //Serial.println(green);
-  //Serial.println(blue);
-  //Serial.println("");
-  //Serial.println(compare());
-  //Serial.println("");
+  Serial.println(red);
+  Serial.println(green);
+  Serial.println(blue);
+  Serial.println("");
+  Serial.println(compare());
+  Serial.println("");
   for (int i = 0; i < 20; i++) {
     Serial.print(ins[i]);
     Serial.print("");
@@ -301,6 +301,15 @@ int compare(){
   }
   else if(ranging(red, 124, 154) && ranging(green, 63, 93) && ranging(blue, 31, 61)){ // yellow
     return (3);
+  }
+  if(ranging(red, 89, 119) && ranging(green, 72, 102) && ranging(blue, 58, 88)){ //blue
+    return (4);
+  }
+  else if(ranging(red, 136, 166) && ranging(green, 47, 77) && ranging(blue, 39, 79)){ //red
+    return (5);
+  }
+  else if(ranging(red, 124, 154) && ranging(green, 63, 93) && ranging(blue, 31, 61)){ // yellow
+    return (6);
   }
   else{
     return (0);
