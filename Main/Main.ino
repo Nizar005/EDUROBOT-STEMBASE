@@ -20,6 +20,10 @@ int ins[50]; // instruction model
 int insstep = 0;  //instructions step
 float red, green, blue; //sensor value
 
+const int pbki = 13; 
+const int pbte = 12;
+const int pbka = 14;
+
 int menu = 0; 
 
 const unsigned char logstemba [] PROGMEM = {
@@ -359,12 +363,12 @@ void setup() {
 
 void loop() {
   
-  if(digitalRead(12) == 0){
+  if(digitalRead(pbki) == 0){
     display.clearDisplay();
     menu++;
     delay(500);
   }
-  else if(digitalRead(14) == 0){
+  else if(digitalRead(pbka) == 0){
     display.clearDisplay();
     menu--;
     delay(500);
@@ -396,16 +400,16 @@ void loop() {
     display.print("Scan");
     display.display();
     
-    if(digitalRead(13) == 0){
-      drawka();
+    if(digitalRead(pbte) == 0){
+      analogWrite(16, 0); //motor in1-motor1
+      analogWrite(17, 100); //motor in2-motor1
+      analogWrite(18, 100); //motor in3-motor2
+      analogWrite(19, 0); //motor in4-motor2
       delay(2000);
-      drawki();
-      delay(2000);
-      drawlurus();
-      delay(2000);
-      drawspin();
-      delay(2000);
-      display.clearDisplay();
+      analogWrite(16, 0); //motor in1-motor1
+      analogWrite(17, 0); //motor in2-motor1
+      analogWrite(18, 0); //motor in3-motor2
+      analogWrite(19, 0);
     }
   }
 
@@ -426,7 +430,7 @@ void loop() {
     display.setCursor(71, 37);
     display.print("Scan");
     display.display();
-    if(digitalRead(13) == 0){
+    if(digitalRead(pbte) == 0){
       drawka();
       delay(500);
       drawki();
@@ -438,10 +442,12 @@ void loop() {
       display.clearDisplay();
     }
   }
-  
-  Serial.println(digitalRead(13));
-  Serial.println(digitalRead(14));
-  Serial.println(digitalRead(12));
+  Serial.print("ki : ");
+  Serial.println(digitalRead(pbki));
+  Serial.print("te : ");
+  Serial.println(digitalRead(pbte));
+  Serial.print("ka : ");
+  Serial.println(digitalRead(pbka));
 }
 
 
