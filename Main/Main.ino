@@ -19,6 +19,8 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 #define LEFT_ENCODER 35
 #define RIGHT_ENCODER 34
 
+
+
 volatile int left_count = 0;
 volatile int right_count = 0;
 
@@ -37,12 +39,11 @@ const int pbki = 13;
 const int pbte = 12;
 const int pbka = 14;
 
-int rightrun = 110;
+int rightrun = 102;
 int leftrun = 100;
 int rightscan = 80;
 int leftscan = 80;
 
-//bool specon = 1;
 
 int menu = 0;
 
@@ -377,9 +378,6 @@ void setup() {
 
 
 void loop() {
-
-
-
   if (digitalRead(pbka) == 0) {
     display.clearDisplay();
     menu++;
@@ -414,31 +412,128 @@ void loop() {
     display.display();
 
     if (digitalRead(pbte) == 0) {
-      // For 20cm with 20-hole encoders (~10.2mm per pulse)
-      int target = 60;  // ~20 pulses for 20cm
+      bool extloop = false;
+      for (int i = 0; i < 50 && extloop; i++)
+        switch (ins[i]) {
+          case 1: //start
+            analogWrite(16, 0);  //motor in1-motor1 moto kanan
+            analogWrite(17, 0);  //motor in2-motor1
+            analogWrite(18, 0);  //motor in3-motor2 moto kiri
+            analogWrite(19, 0);  //motor in4-motor2
 
-      // Reset counters
-      left_count = 0;
-      right_count = 0;
+            Serial.println("done!");
+            delay(500);
+            break;
 
-      // Start moving (adjust your motor control pins)
-      analogWrite(16, 0);         //motor in1-motor1 moto kanan
-      analogWrite(17, rightrun);  //motor in2-motor1
-      analogWrite(18, leftrun);   //motor in3-motor2 moto kiri
-      analogWrite(19, 0);         //motor in4-motor2  // Right motor forward
+          case 2: //lurus
+            drawlurus();
+            left_count = 0;
+            right_count = 0;
 
-      // Wait until target reached
-      while ((left_count + right_count) / 2 < target) {
-        delay(10);
-      }
+            // Start moving (adjust your motor control pins)
+            analogWrite(16, 0);         //motor in1-motor1 moto kanan
+            analogWrite(17, rightrun);  //motor in2-motor1
+            analogWrite(18, leftrun);   //motor in3-motor2 moto kiri
+            analogWrite(19, 0);         //motor in4-motor2  // Right motor forward
 
-      // Stop motors
-      analogWrite(16, 0);  //motor in1-motor1 moto kanan
-      analogWrite(17, 0);  //motor in2-motor1
-      analogWrite(18, 0);  //motor in3-motor2 moto kiri
-      analogWrite(19, 0);  //motor in4-motor2
+            // Wait until target reached
+            while ((left_count + right_count) / 2 < 120) {  //setting seberapa jauh dia jalan (bagian 120)
+              delay(10);
+            }
 
-      Serial.println("20cm done!");
+            // Stop motors
+            analogWrite(16, 0);  //motor in1-motor1 moto kanan
+            analogWrite(17, 0);  //motor in2-motor1
+            analogWrite(18, 0);  //motor in3-motor2 moto kiri
+            analogWrite(19, 0);  //motor in4-motor2
+
+            Serial.println("done!");
+            delay(500);
+            display.clearDisplay();
+            break;
+          case 3: //kiri
+            drawki();
+            left_count = 0;
+            right_count = 0;
+
+            // Start moving (adjust your motor control pins)
+            analogWrite(16, 0);         //motor in1-motor1 moto kanan
+            analogWrite(17, rightrun);  //motor in2-motor1
+            analogWrite(18, 0);   //motor in3-motor2 moto kiri
+            analogWrite(19, 0);         //motor in4-motor2  // Right motor forward
+
+            // Wait until target reached
+            while (right_count < 60) {  //setting seberapa jauh dia jalan (bagian 120)
+              delay(10);
+            }
+
+            // Stop motors
+            analogWrite(16, 0);  //motor in1-motor1 moto kanan
+            analogWrite(17, 0);  //motor in2-motor1
+            analogWrite(18, 0);  //motor in3-motor2 moto kiri
+            analogWrite(19, 0);  //motor in4-motor2
+
+            Serial.println("done!");
+            delay(500);
+            display.clearDisplay();
+            break;
+          case 4: //kanan
+          drawka();
+            left_count = 0;
+            right_count = 0;
+
+            // Start moving (adjust your motor control pins)
+            analogWrite(16, 0);         //motor in1-motor1 moto kanan
+            analogWrite(17, 0);  //motor in2-motor1
+            analogWrite(18, leftrun);   //motor in3-motor2 moto kiri
+            analogWrite(19, 0);         //motor in4-motor2  // Right motor forward
+
+            // Wait until target reached
+            while (left_count < 120) {  //setting seberapa jauh dia jalan (bagian 120)
+              delay(10);
+            }
+
+            // Stop motors
+            analogWrite(16, 0);  //motor in1-motor1 moto kanan
+            analogWrite(17, 0);  //motor in2-motor1
+            analogWrite(18, 0);  //motor in3-motor2 moto kiri
+            analogWrite(19, 0);  //motor in4-motor2
+
+            Serial.println("done!");
+            delay(500);
+            display.clearDisplay();
+            break;
+          case 5: //putlik
+            drawspin();
+            left_count = 0;
+            right_count = 0;
+
+            // Start moving (adjust your motor control pins)
+            analogWrite(16, 0);         //motor in1-motor1 moto kanan
+            analogWrite(17, rightrun);  //motor in2-motor1
+            analogWrite(18, 0);   //motor in3-motor2 moto kiri
+            analogWrite(19, leftrun);         //motor in4-motor2  // Right motor forward
+
+            // Wait until target reached
+            while ((left_count + right_count) / 2 < 120) {  //setting seberapa jauh dia jalan (bagian 120)
+              delay(10);
+            }
+
+            // Stop motors
+            analogWrite(16, 0);  //motor in1-motor1 moto kanan
+            analogWrite(17, 0);  //motor in2-motor1
+            analogWrite(18, 0);  //motor in3-motor2 moto kiri
+            analogWrite(19, 0);  //motor in4-motor2
+
+            Serial.println("done!");
+            delay(500);
+            display.clearDisplay();
+            break;
+          case 6:
+
+          default:
+            break;
+        }
     }
   }
 
@@ -459,9 +554,83 @@ void loop() {
     display.setCursor(71, 37);
     display.print("Scan");
     display.display();
+    bool modetest = 1;
     if (digitalRead(pbte) == 0) {
+      modetest = 0;
+      while (digitalRead(pbte) == 0)
+        ;
+    }
+
+    while (modetest == 0) {
+      while (compare() != 1) {
+        getsensor();
+        analogWrite(16, 0);          //motor in1-motor1 moto kanan
+        analogWrite(17, rightscan);  //motor in2-motor1
+        analogWrite(18, leftscan);   //motor in3-motor2 moto kiri
+        analogWrite(19, 0);          //motor in4-motor2  // Right motor forward
+        delay(100);
+      }
+
+      while (compare() != 6 or compare() != 0) {
+        getsensor();
+        delay(100);
+        switch (compare()) {
+          case 2:  //lurus
+            drawlurus();
+            break;
+          case 3:  //kiri
+            drawki();
+            break;
+          case 4:  //kanan
+            drawka();
+            break;
+          case 5:  //putar balik
+            drawspin();
+            break;
+        }
+        intoarray(compare());
+        /*Serial.print("R: ");
+          Serial.println(red);
+          Serial.print("G: ");
+          Serial.println(green);
+          Serial.print("B: ");
+          Serial.println(blue);
+          Serial.println("");
+          Serial.println(compare());
+          Serial.println("");
+          for (int i = 0; i < 50; i++) {
+            Serial.print(ins[i]);
+            Serial.print(""); */
+      }
+      Serial.println("");
+      delay(500);
+      // For 20cm with 20-hole encoders (~10.2mm per pulse)
+      // Reset counters
+      left_count = 0;
+      right_count = 0;
+
+      // Start moving (adjust your motor control pins)
+      analogWrite(16, 0);          //motor in1-motor1 moto kanan
+      analogWrite(17, rightscan);  //motor in2-motor1
+      analogWrite(18, leftscan);   //motor in3-motor2 moto kiri
+      analogWrite(19, 0);          //motor in4-motor2  // Right motor forward
+
+      // Wait until target reached
+      while ((left_count + right_count) / 2 < 120) {  //setting seberapa jauh dia jalan buat scan berikutnya (bagian 120)
+        delay(10);
+      }
+
+      // Stop motors
+      analogWrite(16, 0);  //motor in1-motor1 moto kanan
+      analogWrite(17, 0);  //motor in2-motor1
+      analogWrite(18, 0);  //motor in3-motor2 moto kiri
+      analogWrite(19, 0);  //motor in4-motor2
+
+      Serial.println("done!");
+      delay(500);
     }
   }
+
 
   else if (menu == 2) {  //tune
     display.display();
@@ -489,17 +658,16 @@ void loop() {
 
     while (modetest == 0) {
 
-
       if (digitalRead(pbka) == 0) {
         display.clearDisplay();
         select++;
-        delay(50);
+        delay(200);
       }
 
       else if (digitalRead(pbki) == 0) {
         display.clearDisplay();
         select--;
-        delay(50);
+        delay(200);
       }
 
       if (select < 0) {
@@ -512,7 +680,9 @@ void loop() {
 
       display.setTextSize(1);
 
-      if (select == 0) {
+      if (select == 0) {  //cek rgb
+        while (digitalRead(pbte) == LOW)
+          ;  // wait for button release
         display.clearDisplay();
 
         display.setTextColor(1);
@@ -530,504 +700,558 @@ void loop() {
         display.print("Back");
 
         display.display();
-        int rgbcon = 1;
+
         if (digitalRead(pbte) == 0) {
           delay(20);
-          rgbcon = 0;
-          delay(500);
           while (digitalRead(pbte) == LOW)
             ;  // wait for button release
-        }
-        while (rgbcon == 0) {
-          for (int i = 0; i < 6; i++) {
+
+          // Start RGB configuration mode
+          int rgbIndex = 0;
+          int rgbMode = 0;  // 0 = configuring, 1 = done
+
+          while (rgbMode == 0) {
+            display.clearDisplay();
+
+            // Show which RGB array we're configuring
+            display.setTextColor(1);
+            display.setTextSize(1);
+            display.setCursor(10, 10);
+
+            switch (rgbIndex) {
+              case 0:
+                display.print("Configuring START");
+                break;
+              case 1:
+                display.print("Configuring LURUS");
+                break;
+              case 2:
+                display.print("Configuring KIRI");
+                break;
+              case 3:
+                display.print("Configuring KANAN");
+                break;
+              case 4:
+                display.print("Configuring PUTAR");
+                display.setCursor(10, 20);
+                display.print("BALIK");
+                display.setCursor(10, 10);
+                break;
+              case 5:
+                display.print("Configuring STOP");
+                break;
+            }
+
+            display.setCursor(10, 25);
+            display.print("Press button to capture");
+
+            display.setCursor(10, 40);
+            display.print("RGB: ");
+            display.print(red);
+            display.print(",");
+            display.print(green);
+            display.print(",");
+            display.print(blue);
+
+            display.display();
+
+            // Check if button is pressed to capture RGB values
             if (digitalRead(pbte) == 0) {
-              if (i == 0) {
-                getsensor();
-                delay(100);
-                valstart[0] == red;
-                valstart[1] == green;
-                valstart[2] == blue;
+              delay(50);  // debounce
+              while (digitalRead(pbte) == LOW)
+                ;  // wait for release
+
+              // Get sensor readings
+              getsensor();
+              delay(100);
+
+              // Store values in the current RGB array
+              switch (rgbIndex) {
+                case 0:
+                  valstart[0] = red;
+                  valstart[1] = green;
+                  valstart[2] = blue;
+                  break;
+                case 1:
+                  vallurus[0] = red;
+                  vallurus[1] = green;
+                  vallurus[2] = blue;
+                  break;
+                case 2:
+                  valkiri[0] = red;
+                  valkiri[1] = green;
+                  valkiri[2] = blue;
+                  break;
+                case 3:
+                  valkanan[0] = red;
+                  valkanan[1] = green;
+                  valkanan[2] = blue;
+                  break;
+                case 4:
+                  valputlik[0] = red;
+                  valputlik[1] = green;
+                  valputlik[2] = blue;
+                  break;
+                case 5:
+                  valstop[0] = red;
+                  valstop[1] = green;
+                  valstop[2] = blue;
+                  break;
               }
-              elif (i == 1) {
-                getsensor();
-                delay(100);
-                vallurus[0] == red;
-                vallurus[1] == green;
-                vallurus[2] == blue;
-              }
-              if (i == 2) {
-                getsensor();
-                delay(100);
-                valkiri[0] == red;
-                valkiri[1] == green;
-                valkiri[2] == blue;
-              }
-              if (i == 3) {
-                getsensor();
-                delay(100);
-                valkanan[0] == red;
-                valkanan[1] == green;
-                valkanan[2] == blue;
-              }
-              if (i == 4) {
-                getsensor();
-                delay(100);
-                valputlik[0] == red;
-                valputlik[1] == green;
-                valputlik[2] == blue;
-              }
-              if (i == 5) {
-                getsensor();
-                delay(100);
-                valstop[0] == red;
-                valstop[1] == green;
-                valstop[2] == blue;
+
+              Serial.print("Updated RGB ");
+              Serial.print(rgbIndex);
+              Serial.print(": ");
+              Serial.print(red);
+              Serial.print(",");
+              Serial.print(green);
+              Serial.print(",");
+              Serial.print(blue);
+              Serial.println();
+
+              // Move to next RGB array
+              rgbIndex++;
+              if (rgbIndex >= 6) {
+                rgbMode = 1;  // Exit configuration mode
               }
             }
+
+            delay(50);
           }
+
+          // Configuration complete
+          display.clearDisplay();
+          display.setCursor(10, 25);
+          display.print("RGB Config Complete!");
+          display.display();
+          delay(1000);
         }
       }
-    }
 
-    else if (select == 1) {
-      display.clearDisplay();
-
-      display.setTextColor(1);
-      display.setTextWrap(false);
-      display.setCursor(21, 14);
-      display.print("Set RGB");
-
-      display.setCursor(21, 25);
-      display.print("Set Motor Speed");
-
-      display.setCursor(14, 25);
-      display.print(">");
-
-      display.setCursor(21, 35);
-      display.print("Back");
-
-      display.display();
-      int specon = 1;
-      if (digitalRead(pbte) == 0) {
-        specon = 0;
-        delay(500);
-      }
-      int speconsel = 0;
-      while (specon == 0) {
+      else if (select == 1) {  //cek motor
         display.clearDisplay();
-        display.setTextSize(1);
+
         display.setTextColor(1);
         display.setTextWrap(false);
+        display.setCursor(21, 14);
+        display.print("Set RGB");
 
+        display.setCursor(21, 25);
+        display.print("Set Motor Speed");
+
+        display.setCursor(14, 25);
+        display.print(">");
+
+        display.setCursor(21, 35);
+        display.print("Back");
+
+        display.display();
+        int specon = 1;
         if (digitalRead(pbte) == 0) {
-          speconsel++;
-          delay(100);
+          specon = 0;
+          delay(500);
         }
+        int speconsel = 0;
+        while (specon == 0) {
+          display.clearDisplay();
+          display.setTextSize(1);
+          display.setTextColor(1);
+          display.setTextWrap(false);
 
-        if (speconsel > 4) {
-          speconsel = 0;
+          if (digitalRead(pbte) == 0) {
+            speconsel++;
+            delay(100);
+          }
+
+          if (speconsel > 4) {
+            speconsel = 0;
+          }
+          Serial.println(speconsel);
+          switch (speconsel) {
+            case 0:
+
+              display.setCursor(24, 5);
+              display.print("Left Scan");
+
+              display.setCursor(24, 16);
+              display.print("Right Scan");
+
+              display.setCursor(99, 16);
+              display.print(rightscan);
+
+              display.setCursor(99, 5);
+              display.print(leftscan);
+
+              display.setCursor(24, 47);
+              display.print("Back");
+
+              display.setCursor(17, 5);
+              display.print(">");
+
+              display.setCursor(24, 26);
+              display.print("Left Run");
+
+              display.setCursor(24, 37);
+              display.print("Right Run");
+
+              display.setCursor(99, 37);
+              display.print(rightrun);
+
+              display.setCursor(99, 26);
+              display.print(leftrun);
+
+              display.display();
+              if (digitalRead(pbka) == 0) {
+                leftscan++;
+              }
+
+              if (digitalRead(pbki) == 0) {
+                leftscan--;
+              }
+              delay(300);
+              break;
+            case 1:
+              display.setCursor(24, 5);
+              display.print("Left Scan");
+
+              display.setCursor(24, 16);
+              display.print("Right Scan");
+
+              display.setCursor(99, 16);
+              display.print(rightscan);
+
+              display.setCursor(99, 5);
+              display.print(leftscan);
+
+              display.setCursor(24, 47);
+              display.print("Back");
+
+              display.setCursor(17, 16);
+              display.print(">");
+
+              display.setCursor(24, 26);
+              display.print("Left Run");
+
+              display.setCursor(24, 37);
+              display.print("Right Run");
+
+              display.setCursor(99, 37);
+              display.print(rightrun);
+
+              display.setCursor(99, 26);
+              display.print(leftrun);
+
+              display.display();
+              if (digitalRead(pbka) == 0) {
+                rightscan++;
+              }
+
+              if (digitalRead(pbki) == 0) {
+                rightscan--;
+              }
+              delay(300);
+              break;
+            case 2:
+              display.setCursor(24, 5);
+              display.print("Left Scan");
+
+              display.setCursor(24, 16);
+              display.print("Right Scan");
+
+              display.setCursor(99, 16);
+              display.print(rightscan);
+
+              display.setCursor(99, 5);
+              display.print(leftscan);
+
+              display.setCursor(24, 47);
+              display.print("Back");
+
+              display.setCursor(17, 26);
+              display.print(">");
+
+              display.setCursor(24, 26);
+              display.print("Left Run");
+
+              display.setCursor(24, 37);
+              display.print("Right Run");
+
+              display.setCursor(99, 37);
+              display.print(rightrun);
+
+              display.setCursor(99, 26);
+              display.print(leftrun);
+
+              display.display();
+              if (digitalRead(pbka) == 0) {
+                leftrun++;
+              }
+
+              if (digitalRead(pbki) == 0) {
+                leftrun--;
+              }
+              delay(300);
+              break;
+            case 3:
+              display.setCursor(24, 5);
+              display.print("Left Scan");
+
+              display.setCursor(24, 16);
+              display.print("Right Scan");
+
+              display.setCursor(99, 16);
+              display.print(rightscan);
+
+              display.setCursor(99, 5);
+              display.print(leftscan);
+
+              display.setCursor(24, 47);
+              display.print("Back");
+
+              display.setCursor(17, 37);
+              display.print(">");
+
+              display.setCursor(24, 26);
+              display.print("Left Run");
+
+              display.setCursor(24, 37);
+              display.print("Right Run");
+
+              display.setCursor(99, 37);
+              display.print(rightrun);
+
+              display.setCursor(99, 26);
+              display.print(leftrun);
+
+              display.display();
+              if (digitalRead(pbka) == 0) {
+                rightrun++;
+              }
+
+              if (digitalRead(pbki) == 0) {
+                rightrun--;
+              }
+              delay(300);
+              break;
+            case 4:
+              display.setCursor(24, 5);
+              display.print("Left Scan");
+
+              display.setCursor(24, 16);
+              display.print("Right Scan");
+
+              display.setCursor(99, 16);
+              display.print(rightscan);
+
+              display.setCursor(99, 5);
+              display.print(leftscan);
+
+              display.setCursor(24, 47);
+              display.print("Back");
+
+              display.setCursor(17, 47);
+              display.print(">");
+
+              display.setCursor(24, 26);
+              display.print("Left Run");
+
+              display.setCursor(24, 37);
+              display.print("Right Run");
+
+              display.setCursor(99, 37);
+              display.print(rightrun);
+
+              display.setCursor(99, 26);
+              display.print(leftrun);
+
+              display.display();
+              if (digitalRead(pbka) == 0 or digitalRead(pbki) == 0) {
+                specon = 1;
+              }
+              break;
+          }
         }
-        Serial.println(speconsel);
-        switch (speconsel) {
-          case 0:
-
-            display.setCursor(24, 5);
-            display.print("Left Scan");
-
-            display.setCursor(24, 16);
-            display.print("Right Scan");
-
-            display.setCursor(99, 16);
-            display.print(rightscan);
-
-            display.setCursor(99, 5);
-            display.print(leftscan);
-
-            display.setCursor(24, 47);
-            display.print("Back");
-
-            display.setCursor(17, 5);
-            display.print(">");
-
-            display.setCursor(24, 26);
-            display.print("Left Run");
-
-            display.setCursor(24, 37);
-            display.print("Right Run");
-
-            display.setCursor(99, 37);
-            display.print(rightrun);
-
-            display.setCursor(99, 26);
-            display.print(leftrun);
-
-            display.display();
-            if (digitalRead(pbka) == 0) {
-              leftscan++;
-            }
-
-            if (digitalRead(pbki) == 0) {
-              leftscan--;
-            }
-            break;
-          case 1:
-            display.setCursor(24, 5);
-            display.print("Left Scan");
-
-            display.setCursor(24, 16);
-            display.print("Right Scan");
-
-            display.setCursor(99, 16);
-            display.print(rightscan);
-
-            display.setCursor(99, 5);
-            display.print(leftscan);
-
-            display.setCursor(24, 47);
-            display.print("Back");
-
-            display.setCursor(17, 16);
-            display.print(">");
-
-            display.setCursor(24, 26);
-            display.print("Left Run");
-
-            display.setCursor(24, 37);
-            display.print("Right Run");
-
-            display.setCursor(99, 37);
-            display.print(rightrun);
-
-            display.setCursor(99, 26);
-            display.print(leftrun);
-
-            display.display();
-            if (digitalRead(pbka) == 0) {
-              rightscan++;
-            }
-
-            if (digitalRead(pbki) == 0) {
-              rightscan--;
-            }
-            break;
-          case 2:
-            display.setCursor(24, 5);
-            display.print("Left Scan");
-
-            display.setCursor(24, 16);
-            display.print("Right Scan");
-
-            display.setCursor(99, 16);
-            display.print(rightscan);
-
-            display.setCursor(99, 5);
-            display.print(leftscan);
-
-            display.setCursor(24, 47);
-            display.print("Back");
-
-            display.setCursor(17, 26);
-            display.print(">");
-
-            display.setCursor(24, 26);
-            display.print("Left Run");
-
-            display.setCursor(24, 37);
-            display.print("Right Run");
-
-            display.setCursor(99, 37);
-            display.print(rightrun);
-
-            display.setCursor(99, 26);
-            display.print(leftrun);
-
-            display.display();
-            if (digitalRead(pbka) == 0) {
-              leftrun++;
-            }
-
-            if (digitalRead(pbki) == 0) {
-              leftrun--;
-            }
-            break;
-          case 3:
-            display.setCursor(24, 5);
-            display.print("Left Scan");
-
-            display.setCursor(24, 16);
-            display.print("Right Scan");
-
-            display.setCursor(99, 16);
-            display.print(rightscan);
-
-            display.setCursor(99, 5);
-            display.print(leftscan);
-
-            display.setCursor(24, 47);
-            display.print("Back");
-
-            display.setCursor(17, 37);
-            display.print(">");
-
-            display.setCursor(24, 26);
-            display.print("Left Run");
-
-            display.setCursor(24, 37);
-            display.print("Right Run");
-
-            display.setCursor(99, 37);
-            display.print(rightrun);
-
-            display.setCursor(99, 26);
-            display.print(leftrun);
-
-            display.display();
-            if (digitalRead(pbka) == 0) {
-              rightrun++;
-            }
-
-            if (digitalRead(pbki) == 0) {
-              rightrun--;
-            }
-            break;
-          case 4:
-            display.setCursor(24, 5);
-            display.print("Left Scan");
-
-            display.setCursor(24, 16);
-            display.print("Right Scan");
-
-            display.setCursor(99, 16);
-            display.print(rightscan);
-
-            display.setCursor(99, 5);
-            display.print(leftscan);
-
-            display.setCursor(24, 47);
-            display.print("Back");
-
-            display.setCursor(17, 47);
-            display.print(">");
-
-            display.setCursor(24, 26);
-            display.print("Left Run");
-
-            display.setCursor(24, 37);
-            display.print("Right Run");
-
-            display.setCursor(99, 37);
-            display.print(rightrun);
-
-            display.setCursor(99, 26);
-            display.print(leftrun);
-
-            display.display();
-            if (digitalRead(pbka) == 0 or digitalRead(pbki) == 0) {
-              specon = 1;
-            }
-            break;
-        }
-        delay(200);
+        delay(300);
       }
-      delay(300);
-    }
 
-    else if (select == 2) {
-      display.clearDisplay();
-
-      display.setTextColor(1);
-      display.setTextWrap(false);
-      display.setCursor(21, 14);
-      display.print("Set RGB");
-
-      display.setCursor(21, 25);
-      display.print("Set Motor Speed");
-
-      display.setCursor(14, 35);
-      display.print(">");
-
-      display.setCursor(21, 35);
-      display.print("Back");
-
-      display.display();
-      if (digitalRead(pbte) == 0) {
+      else if (select == 2) {  //back
         display.clearDisplay();
-        modetest = 1;
+
+        display.setTextColor(1);
+        display.setTextWrap(false);
+        display.setCursor(21, 14);
+        display.print("Set RGB");
+
+        display.setCursor(21, 25);
+        display.print("Set Motor Speed");
+
+        display.setCursor(14, 35);
+        display.print(">");
+
+        display.setCursor(21, 35);
+        display.print("Back");
+
+        display.display();
+        if (digitalRead(pbte) == 0) {
+          display.clearDisplay();
+          modetest = 1;
+        }
       }
       delay(200);
     }
-    delay(200);
-  }
-}
-
-
-else if (menu == 3) {  //test
-  display.display();
-
-  display.drawBitmap(4, 5, bot, 50, 64, 1);
-  display.fillRoundRect(63, 32, 62, 25, 10, 1);
-
-  display.setTextColor(1);
-  display.setTextSize(2);
-  display.setTextWrap(false);
-  display.setCursor(71, 13);
-  display.print("Tune");
-
-  display.setTextColor(0);
-  display.setCursor(71, 37);
-  display.print("Test");
-  display.display();
-
-  bool modetest = 1;
-  if (digitalRead(pbte) == 0) {
-    modetest = 0;
   }
 
-  while (modetest == 0) {
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    display.setCursor(10, 0);
-    display.print("For motor test ");
-    display.setCursor(10, 10);
-    display.print("press red button");
+
+
+  else if (menu == 3) {  //test
     display.display();
-    delay(2000);
 
-    if (digitalRead(pbte) == LOW) {
-      delay(50);
+    display.drawBitmap(4, 5, bot, 50, 64, 1);
+    display.fillRoundRect(63, 32, 62, 25, 10, 1);
+
+    display.setTextColor(1);
+    display.setTextSize(2);
+    display.setTextWrap(false);
+    display.setCursor(71, 13);
+    display.print("Tune");
+
+    display.setTextColor(0);
+    display.setCursor(71, 37);
+    display.print("Test");
+    display.display();
+
+    bool modetest = 1;
+    if (digitalRead(pbte) == 0) {
+      modetest = 0;
+    }
+
+    while (modetest == 0) {
+      display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(10, 0);
+      display.print("For motor test ");
+      display.setCursor(10, 10);
+      display.print("press red button");
+      display.display();
+      delay(2000);
+
       if (digitalRead(pbte) == LOW) {
-        while (digitalRead(pbte) == LOW)
-          ;
-        delay(20);
-        display.clearDisplay();
-        display.setTextSize(1);
-        display.setTextColor(WHITE);
-        display.setCursor(10, 0);
-        display.print("test start");
-        display.display();
-        analogWrite(16, 0);         //motor in1-motor1 moto kanan
-        analogWrite(17, rightrun);  //motor in2-motor1
-        analogWrite(18, leftrun);   //motor in3-motor2 moto kiri
-        analogWrite(19, 0);         //motor in4-motor2
-
-        unsigned long start = millis();
-        while (millis() - start < 4000) {
-          if (digitalRead(pbte) == 0) break;
-          delay(10);
-        }
-        analogWrite(16, 0);  //motor in1-motor1
-        analogWrite(17, 0);  //motor in2-motor1
-        analogWrite(18, 0);  //motor in3-motor2
-        analogWrite(19, 0);  //motor in4-motor2
-
-        display.clearDisplay();
-        display.setTextSize(1);
-        display.setTextColor(WHITE);
-        display.setCursor(10, 0);
-        display.print("Motor test done,");
-        display.setCursor(10, 10);
-        display.print("display test");
-        display.display();
-        delay(2000);
-
-        drawka();
-        delay(500);
-        drawki();
-        delay(500);
-        drawlurus();
-        delay(500);
-        drawspin();
-        delay(500);
-        display.clearDisplay();
-
-        while (digitalRead(pbte) == 1) {
-          getsensor();
-          delay(100);
-
-
-          display.setTextColor(1);
-          display.setTextWrap(false);
-          display.setCursor(21, 8);
-          display.print(int(red));
-
-          display.setCursor(58, 8);
-          display.print(int(green));
-
-          display.setCursor(97, 8);
-          display.print(int(blue));
-
-          display.setCursor(8, 8);
-          display.print("R:");
-          display.setCursor(46, 8);
-          display.print("G:");
-          display.setCursor(86, 8);
-          display.print("B:");
-
-          display.setCursor(7, 30);
-          switch (compare()) {
-            case 0:
-              display.print("Not detected");
-              break;
-            case 1:
-              display.print("Start");
-              break;
-            case 2:
-              display.print("Lurus");
-              break;
-            case 3:
-              display.print("Kiri");
-              break;
-            case 4:
-              display.print("Kanan");
-              break;
-            case 5:
-              display.print("Putar balik");
-              break;
-            case 6:
-              display.print("Stop");
-              break;
-          }
-          display.display();
-          delay(200);
+        delay(50);
+        if (digitalRead(pbte) == LOW) {
+          while (digitalRead(pbte) == LOW)
+            ;
+          delay(20);
           display.clearDisplay();
+          display.setTextSize(1);
+          display.setTextColor(WHITE);
+          display.setCursor(10, 0);
+          display.print("test start");
+          display.display();
+          analogWrite(16, 0);         //motor in1-motor1 moto kanan
+          analogWrite(17, rightrun);  //motor in2-motor1
+          analogWrite(18, leftrun);   //motor in3-motor2 moto kiri
+          analogWrite(19, 0);         //motor in4-motor2
+
+          unsigned long start = millis();
+          while (millis() - start < 4000) {
+            if (digitalRead(pbte) == 0) break;
+            delay(10);
+          }
+          analogWrite(16, 0);  //motor in1-motor1
+          analogWrite(17, 0);  //motor in2-motor1
+          analogWrite(18, 0);  //motor in3-motor2
+          analogWrite(19, 0);  //motor in4-motor2
+
+          display.clearDisplay();
+          display.setTextSize(1);
+          display.setTextColor(WHITE);
+          display.setCursor(10, 0);
+          display.print("Motor test done,");
+          display.setCursor(10, 10);
+          display.print("display test");
+          display.display();
+          delay(2000);
+
+          drawka();
+          delay(500);
+          drawki();
+          delay(500);
+          drawlurus();
+          delay(500);
+          drawspin();
+          delay(500);
+          display.clearDisplay();
+
+          while (digitalRead(pbte) == 1) {
+            getsensor();
+            delay(100);
+
+
+            display.setTextColor(1);
+            display.setTextWrap(false);
+            display.setCursor(21, 8);
+            display.print(int(red));
+
+            display.setCursor(58, 8);
+            display.print(int(green));
+
+            display.setCursor(97, 8);
+            display.print(int(blue));
+
+            display.setCursor(8, 8);
+            display.print("R:");
+            display.setCursor(46, 8);
+            display.print("G:");
+            display.setCursor(86, 8);
+            display.print("B:");
+
+            display.setCursor(7, 30);
+            switch (compare()) {
+              case 0:
+                display.print("Not detected");
+                break;
+              case 1:
+                display.print("Start");
+                break;
+              case 2:
+                display.print("Lurus");
+                break;
+              case 3:
+                display.print("Kiri");
+                break;
+              case 4:
+                display.print("Kanan");
+                break;
+              case 5:
+                display.print("Putar balik");
+                break;
+              case 6:
+                display.print("Stop");
+                break;
+            }
+            display.display();
+            delay(200);
+            display.clearDisplay();
+          }
+          display.clearDisplay();
+          modetest = 1;
         }
-        display.clearDisplay();
-        modetest = 1;
       }
     }
   }
-}
 
-Serial.print("ki : ");
-Serial.println(digitalRead(pbki));
-Serial.print("te : ");
-Serial.println(digitalRead(pbte));
-Serial.print("ka : ");
-Serial.println(digitalRead(pbka));
-delay(300);
+  Serial.print("ki : ");
+  Serial.println(digitalRead(pbki));
+  Serial.print("te : ");
+  Serial.println(digitalRead(pbte));
+  Serial.print("ka : ");
+  Serial.println(digitalRead(pbka));
+  delay(300);
 }
 
 
 void scan() {
-  getsensor();
-  delay(100);
-  intoarray(compare());
-  Serial.print("R: ");
-  Serial.println(red);
-  Serial.print("G: ");
-  Serial.println(green);
-  Serial.print("B: ");
-  Serial.println(blue);
-  Serial.println("");
-  Serial.println(compare());
-  Serial.println("");
-  for (int i = 0; i < 20; i++) {
-    Serial.print(ins[i]);
-    Serial.print("");
-  }
-  Serial.println("");
-  delay(500);
 }
 
 void getsensor() {
@@ -1043,13 +1267,13 @@ int compare() {
     return (1);
   } else if (ranging(red, 45, 10, 10) && ranging(green, 92, 10, 10) && ranging(blue, 111, 10, 10)) {  //lurus
     return (2);
-  } else if (ranging(red, 97, 10, 10) && ranging(green, 103, 10, 10) && ranging(blue, 53, 10, 10)) {  //kiri
+  } else if (ranging(red, 104, 10, 10) && ranging(green, 102, 10, 10) && ranging(blue, 55, 10, 10)) {  //kiri
     return (3);
-  } else if (ranging(red, 172, 10, 10) && ranging(green, 54, 10, 10) && ranging(blue, 33, 10, 10)) {  //kanan
+  } else if (ranging(red, 159, 10, 10) && ranging(green, 63, 10, 10) && ranging(blue, 34, 10, 10)) {  //kanan
     return (4);
-  } else if (ranging(red, 200, 10, 10) && ranging(green, 37, 10, 10) && ranging(blue, 37, 10, 10)) {  //putar balik
+  } else if (ranging(red, 200, 3, 3) && ranging(green, 37, 3, 3) && ranging(blue, 37, 3, 3)) {  //putar balik
     return (5);
-  } else if (ranging(red, 195, 10, 10) && ranging(green, 38, 10, 10) && ranging(blue, 42, 10, 10)) {  //stop
+  } else if (ranging(red, 210, 3, 3) && ranging(green, 30, 3, 3) && ranging(blue, 35, 3, 3)) {  //stop
     return (6);
   } else {
     return (0);
