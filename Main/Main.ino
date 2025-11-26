@@ -39,10 +39,10 @@ const int pbki = 13;
 const int pbte = 12;
 const int pbka = 14;
 
-int rightrun = 102;
-int leftrun = 100;
-int rightscan = 80;
-int leftscan = 80;
+int rightrun = 155;
+int leftrun = 160;
+int rightscan = 115;
+int leftscan = 120;
 
 
 int menu = 0;
@@ -327,8 +327,8 @@ void setup() {
   }
 
 
-  pinMode(LEFT_ENCODER, INPUT_PULLUP);
-  pinMode(RIGHT_ENCODER, INPUT_PULLUP);
+  pinMode(LEFT_ENCODER, INPUT);
+  pinMode(RIGHT_ENCODER, INPUT);
 
   attachInterrupt(digitalPinToInterrupt(LEFT_ENCODER), leftISR, RISING);
   attachInterrupt(digitalPinToInterrupt(RIGHT_ENCODER), rightISR, RISING);
@@ -410,12 +410,17 @@ void loop() {
     display.setCursor(71, 37);
     display.print("Scan");
     display.display();
-
+    bool modetest = 0;
     if (digitalRead(pbte) == 0) {
+      modetest = 0;
+    }
+    int select = 0;
+
+    while (modetest == 0) {
       bool extloop = false;
       for (int i = 0; i < 50 && extloop; i++)
         switch (ins[i]) {
-          case 1: //start
+          case 1:                //start
             analogWrite(16, 0);  //motor in1-motor1 moto kanan
             analogWrite(17, 0);  //motor in2-motor1
             analogWrite(18, 0);  //motor in3-motor2 moto kiri
@@ -425,19 +430,19 @@ void loop() {
             delay(500);
             break;
 
-          case 2: //lurus
+          case 2:  //lurus
             drawlurus();
             left_count = 0;
             right_count = 0;
 
             // Start moving (adjust your motor control pins)
-            analogWrite(16, 0);         //motor in1-motor1 moto kanan
-            analogWrite(17, rightrun);  //motor in2-motor1
-            analogWrite(18, leftrun);   //motor in3-motor2 moto kiri
-            analogWrite(19, 0);         //motor in4-motor2  // Right motor forward
+            analogWrite(16, rightrun);  //motor in1-motor1 moto kanan
+            analogWrite(17, 0);         //motor in2-motor1
+            analogWrite(18, 0);         //motor in3-motor2 moto kiri
+            analogWrite(19, leftrun);   //motor in4-motor2  // Right motor forward
 
             // Wait until target reached
-            while ((left_count + right_count) / 2 < 120) {  //setting seberapa jauh dia jalan (bagian 120)
+            while ((left_count + right_count) / 2 < 60) {  //setting seberapa jauh dia jalan (bagian 120)
               delay(10);
             }
 
@@ -451,15 +456,15 @@ void loop() {
             delay(500);
             display.clearDisplay();
             break;
-          case 3: //kiri
+          case 3:  //kiri
             drawki();
             left_count = 0;
             right_count = 0;
 
             // Start moving (adjust your motor control pins)
-            analogWrite(16, 0);         //motor in1-motor1 moto kanan
-            analogWrite(17, rightrun);  //motor in2-motor1
-            analogWrite(18, 0);   //motor in3-motor2 moto kiri
+            analogWrite(16, rightrun);  //motor in1-motor1 moto kanan
+            analogWrite(17, 0);         //motor in2-motor1
+            analogWrite(18, 0);         //motor in3-motor2 moto kiri
             analogWrite(19, 0);         //motor in4-motor2  // Right motor forward
 
             // Wait until target reached
@@ -477,16 +482,16 @@ void loop() {
             delay(500);
             display.clearDisplay();
             break;
-          case 4: //kanan
-          drawka();
+          case 4:  //kanan
+            drawka();
             left_count = 0;
             right_count = 0;
 
             // Start moving (adjust your motor control pins)
-            analogWrite(16, 0);         //motor in1-motor1 moto kanan
-            analogWrite(17, 0);  //motor in2-motor1
-            analogWrite(18, leftrun);   //motor in3-motor2 moto kiri
-            analogWrite(19, 0);         //motor in4-motor2  // Right motor forward
+            analogWrite(16, 0);        //motor in1-motor1 moto kanan
+            analogWrite(17, 0);        //motor in2-motor1
+            analogWrite(18, 0);        //motor in3-motor2 moto kiri
+            analogWrite(19, leftrun);  //motor in4-motor2  // Right motor forward
 
             // Wait until target reached
             while (left_count < 120) {  //setting seberapa jauh dia jalan (bagian 120)
@@ -503,7 +508,7 @@ void loop() {
             delay(500);
             display.clearDisplay();
             break;
-          case 5: //putlik
+          case 5:  //putlik
             drawspin();
             left_count = 0;
             right_count = 0;
@@ -511,8 +516,8 @@ void loop() {
             // Start moving (adjust your motor control pins)
             analogWrite(16, 0);         //motor in1-motor1 moto kanan
             analogWrite(17, rightrun);  //motor in2-motor1
-            analogWrite(18, 0);   //motor in3-motor2 moto kiri
-            analogWrite(19, leftrun);         //motor in4-motor2  // Right motor forward
+            analogWrite(18, 0);         //motor in3-motor2 moto kiri
+            analogWrite(19, leftrun);   //motor in4-motor2  // Right motor forward
 
             // Wait until target reached
             while ((left_count + right_count) / 2 < 120) {  //setting seberapa jauh dia jalan (bagian 120)
@@ -530,66 +535,92 @@ void loop() {
             display.clearDisplay();
             break;
           case 6:
-
+            modetest = 0;
+            break;
           default:
             break;
         }
     }
   }
 
-  else if (menu == 1) {  //scan
-
+  else if (menu == 1) {  // scan
     display.display();
-
     display.drawBitmap(4, 5, bot, 50, 64, 1);
     display.fillRoundRect(63, 32, 62, 25, 10, 1);
-
     display.setTextColor(1);
     display.setTextSize(2);
     display.setTextWrap(false);
     display.setCursor(71, 13);
     display.print("Play");
-
     display.setTextColor(0);
     display.setCursor(71, 37);
     display.print("Scan");
     display.display();
-    bool modetest = 1;
+
+    bool modeteset = 1;
+
     if (digitalRead(pbte) == 0) {
-      modetest = 0;
+      delay(200);  // debounce
       while (digitalRead(pbte) == 0)
-        ;
-    }
+        ;  // wait for release
+      modeteset = 0;
 
-    while (modetest == 0) {
-      while (compare() != 1) {
-        getsensor();
-        analogWrite(16, 0);          //motor in1-motor1 moto kanan
-        analogWrite(17, rightscan);  //motor in2-motor1
-        analogWrite(18, leftscan);   //motor in3-motor2 moto kiri
-        analogWrite(19, 0);          //motor in4-motor2  // Right motor forward
-        delay(100);
-      }
-
-      while (compare() != 6 or compare() != 0) {
+      while (modeteset == 0) {
         getsensor();
         delay(100);
+
+        display.setTextSize(1);
+        display.setTextColor(1);
+        display.setTextWrap(false);
+        display.setCursor(21, 8);
+        display.print(int(red));
+
+        display.setCursor(58, 8);
+        display.print(int(green));
+
+        display.setCursor(97, 8);
+        display.print(int(blue));
+
+        display.setCursor(8, 8);
+        display.print("R:");
+        display.setCursor(46, 8);
+        display.print("G:");
+        display.setCursor(86, 8);
+        display.print("B:");
+
+        display.setCursor(7, 30);
         switch (compare()) {
-          case 2:  //lurus
+          case 0:
+            display.print("Not detected");
+            break;
+          case 1:
+            display.print("Start");
+            break;
+          case 2:
             drawlurus();
             break;
-          case 3:  //kiri
+          case 3:
             drawki();
             break;
-          case 4:  //kanan
+          case 4:
             drawka();
             break;
-          case 5:  //putar balik
+          case 5:
             drawspin();
             break;
+          case 6:
+            display.print("Stop");
+            break;
         }
-        intoarray(compare());
-        /*Serial.print("R: ");
+        display.display();
+        delay(200);
+        display.clearDisplay();
+
+        if (digitalRead(pbki) == 0) {
+          getsensor();
+          delay(100);
+          intoarray(compare());
+          Serial.print("R: ");
           Serial.println(red);
           Serial.print("G: ");
           Serial.println(green);
@@ -598,38 +629,22 @@ void loop() {
           Serial.println("");
           Serial.println(compare());
           Serial.println("");
-          for (int i = 0; i < 50; i++) {
+          for (int i = 0; i < 20; i++) {
             Serial.print(ins[i]);
-            Serial.print(""); */
+            Serial.print("");
+          }
+          Serial.println("");
+          display.print("SAVED");
+          delay(1000);
+        }
+        if (digitalRead(pbka) == 0) {
+          modeteset = 1;
+          break;
+        }
       }
-      Serial.println("");
-      delay(500);
-      // For 20cm with 20-hole encoders (~10.2mm per pulse)
-      // Reset counters
-      left_count = 0;
-      right_count = 0;
-
-      // Start moving (adjust your motor control pins)
-      analogWrite(16, 0);          //motor in1-motor1 moto kanan
-      analogWrite(17, rightscan);  //motor in2-motor1
-      analogWrite(18, leftscan);   //motor in3-motor2 moto kiri
-      analogWrite(19, 0);          //motor in4-motor2  // Right motor forward
-
-      // Wait until target reached
-      while ((left_count + right_count) / 2 < 120) {  //setting seberapa jauh dia jalan buat scan berikutnya (bagian 120)
-        delay(10);
-      }
-
-      // Stop motors
-      analogWrite(16, 0);  //motor in1-motor1 moto kanan
-      analogWrite(17, 0);  //motor in2-motor1
-      analogWrite(18, 0);  //motor in3-motor2 moto kiri
-      analogWrite(19, 0);  //motor in4-motor2
-
-      Serial.println("done!");
-      delay(500);
     }
   }
+
 
 
   else if (menu == 2) {  //tune
@@ -1092,14 +1107,33 @@ void loop() {
         display.print("Back");
 
         display.display();
-        if (digitalRead(pbte) == 0) {
+        if (digitalRead(pbki) == 0) {
           display.clearDisplay();
-          modetest = 1;
+          getsensor();
+          delay(100);
+          intoarray(compare());
+          Serial.print("R: ");
+          Serial.println(red);
+          Serial.print("G: ");
+          Serial.println(green);
+          Serial.print("B: ");
+          Serial.println(blue);
+          Serial.println("");
+          Serial.println(compare());
+          Serial.println("");
+          for (int i = 0; i < 20; i++) {
+            Serial.print(ins[i]);
+            Serial.print("");
+          }
+          Serial.println("");
+          delay(500);
         }
+        modetest = 1;
       }
-      delay(200);
     }
+    delay(200);
   }
+
 
 
 
@@ -1263,7 +1297,7 @@ void getsensor() {
 
 
 int compare() {
-  if (ranging(red, 141, 10, 10) && ranging(green, 51, 10, 10) && ranging(blue, 68, 10, 10)) {  //start
+  if (ranging(red, 154, 10, 10) && ranging(green, 54, 10, 10) && ranging(blue, 75, 10, 10)) {  //start
     return (1);
   } else if (ranging(red, 45, 10, 10) && ranging(green, 92, 10, 10) && ranging(blue, 111, 10, 10)) {  //lurus
     return (2);
@@ -1271,9 +1305,9 @@ int compare() {
     return (3);
   } else if (ranging(red, 159, 10, 10) && ranging(green, 63, 10, 10) && ranging(blue, 34, 10, 10)) {  //kanan
     return (4);
-  } else if (ranging(red, 200, 3, 3) && ranging(green, 37, 3, 3) && ranging(blue, 37, 3, 3)) {  //putar balik
+  } else if (ranging(red, 208, 10, 10) && ranging(green, 31, 10, 10) && ranging(blue, 35, 10, 10)) {  //putar balik
     return (5);
-  } else if (ranging(red, 210, 3, 3) && ranging(green, 30, 3, 3) && ranging(blue, 35, 3, 3)) {  //stop
+  } else if (ranging(red, 148, 10, 10) && ranging(green, 62, 10, 10) && ranging(blue, 52, 10, 10)) {  //stop
     return (6);
   } else {
     return (0);
