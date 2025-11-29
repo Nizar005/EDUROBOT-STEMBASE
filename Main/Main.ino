@@ -19,17 +19,9 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 #define LEFT_ENCODER 35
 #define RIGHT_ENCODER 34
 
-
-
 volatile int left_count = 0;
 volatile int right_count = 0;
 
-int valstart[] = { 141, 51, 68 };
-int vallurus[] = { 45, 92, 111 };
-int valkiri[] = { 97, 103, 57 };
-int valkanan[] = { 172, 54, 33 };
-int valputlik[] = { 200, 37, 37 };
-int valstop[] = { 195, 38, 42 };
 
 int ins[50];             // instruction model
 int insstep = 0;         //instructions step
@@ -39,11 +31,12 @@ const int pbki = 13;
 const int pbte = 12;
 const int pbka = 14;
 
-int rightrun = 155;
-int leftrun = 160;
-int rightscan = 115;
-int leftscan = 120;
+int rightrun = 110;
+int leftrun = 100;
+int rightscan = 80;
+int leftscan = 80;
 
+//bool specon = 1;
 
 int menu = 0;
 
@@ -327,8 +320,8 @@ void setup() {
   }
 
 
-  pinMode(LEFT_ENCODER, INPUT);
-  pinMode(RIGHT_ENCODER, INPUT);
+  pinMode(LEFT_ENCODER, INPUT_PULLUP);
+  pinMode(RIGHT_ENCODER, INPUT_PULLUP);
 
   attachInterrupt(digitalPinToInterrupt(LEFT_ENCODER), leftISR, RISING);
   attachInterrupt(digitalPinToInterrupt(RIGHT_ENCODER), rightISR, RISING);
@@ -378,6 +371,9 @@ void setup() {
 
 
 void loop() {
+
+
+
   if (digitalRead(pbka) == 0) {
     display.clearDisplay();
     menu++;
@@ -410,140 +406,20 @@ void loop() {
     display.setCursor(71, 37);
     display.print("Scan");
     display.display();
-    bool modetest = 0;
+
+    /*
     if (digitalRead(pbte) == 0) {
       modetest = 0;
     }
     int select = 0;
 
     while (modetest == 0) {
-      bool extloop = false;
-      for (int i = 0; i < 50 && extloop; i++)
-        switch (ins[i]) {
-          case 1:                //start
-            analogWrite(16, 0);  //motor in1-motor1 moto kanan
-            analogWrite(17, 0);  //motor in2-motor1
-            analogWrite(18, 0);  //motor in3-motor2 moto kiri
-            analogWrite(19, 0);  //motor in4-motor2
-
-            Serial.println("done!");
-            delay(500);
-            break;
-
-          case 2:  //lurus
-            drawlurus();
-            left_count = 0;
-            right_count = 0;
-
-            // Start moving (adjust your motor control pins)
-            analogWrite(16, rightrun);  //motor in1-motor1 moto kanan
-            analogWrite(17, 0);         //motor in2-motor1
-            analogWrite(18, 0);         //motor in3-motor2 moto kiri
-            analogWrite(19, leftrun);   //motor in4-motor2  // Right motor forward
-
-            // Wait until target reached
-            while ((left_count + right_count) / 2 < 60) {  //setting seberapa jauh dia jalan (bagian 120)
-              delay(10);
-            }
-
-            // Stop motors
-            analogWrite(16, 0);  //motor in1-motor1 moto kanan
-            analogWrite(17, 0);  //motor in2-motor1
-            analogWrite(18, 0);  //motor in3-motor2 moto kiri
-            analogWrite(19, 0);  //motor in4-motor2
-
-            Serial.println("done!");
-            delay(500);
-            display.clearDisplay();
-            break;
-          case 3:  //kiri
-            drawki();
-            left_count = 0;
-            right_count = 0;
-
-            // Start moving (adjust your motor control pins)
-            analogWrite(16, rightrun);  //motor in1-motor1 moto kanan
-            analogWrite(17, 0);         //motor in2-motor1
-            analogWrite(18, 0);         //motor in3-motor2 moto kiri
-            analogWrite(19, 0);         //motor in4-motor2  // Right motor forward
-
-            // Wait until target reached
-            while (right_count < 60) {  //setting seberapa jauh dia jalan (bagian 120)
-              delay(10);
-            }
-
-            // Stop motors
-            analogWrite(16, 0);  //motor in1-motor1 moto kanan
-            analogWrite(17, 0);  //motor in2-motor1
-            analogWrite(18, 0);  //motor in3-motor2 moto kiri
-            analogWrite(19, 0);  //motor in4-motor2
-
-            Serial.println("done!");
-            delay(500);
-            display.clearDisplay();
-            break;
-          case 4:  //kanan
-            drawka();
-            left_count = 0;
-            right_count = 0;
-
-            // Start moving (adjust your motor control pins)
-            analogWrite(16, 0);        //motor in1-motor1 moto kanan
-            analogWrite(17, 0);        //motor in2-motor1
-            analogWrite(18, 0);        //motor in3-motor2 moto kiri
-            analogWrite(19, leftrun);  //motor in4-motor2  // Right motor forward
-
-            // Wait until target reached
-            while (left_count < 120) {  //setting seberapa jauh dia jalan (bagian 120)
-              delay(10);
-            }
-
-            // Stop motors
-            analogWrite(16, 0);  //motor in1-motor1 moto kanan
-            analogWrite(17, 0);  //motor in2-motor1
-            analogWrite(18, 0);  //motor in3-motor2 moto kiri
-            analogWrite(19, 0);  //motor in4-motor2
-
-            Serial.println("done!");
-            delay(500);
-            display.clearDisplay();
-            break;
-          case 5:  //putlik
-            drawspin();
-            left_count = 0;
-            right_count = 0;
-
-            // Start moving (adjust your motor control pins)
-            analogWrite(16, 0);         //motor in1-motor1 moto kanan
-            analogWrite(17, rightrun);  //motor in2-motor1
-            analogWrite(18, 0);         //motor in3-motor2 moto kiri
-            analogWrite(19, leftrun);   //motor in4-motor2  // Right motor forward
-
-            // Wait until target reached
-            while ((left_count + right_count) / 2 < 120) {  //setting seberapa jauh dia jalan (bagian 120)
-              delay(10);
-            }
-
-            // Stop motors
-            analogWrite(16, 0);  //motor in1-motor1 moto kanan
-            analogWrite(17, 0);  //motor in2-motor1
-            analogWrite(18, 0);  //motor in3-motor2 moto kiri
-            analogWrite(19, 0);  //motor in4-motor2
-
-            Serial.println("done!");
-            delay(500);
-            display.clearDisplay();
-            break;
-          case 6:
-            modetest = 0;
-            break;
-          default:
-            break;
-        }
     }
+    */
+
   }
 
-  else if (menu == 1) {  // scan
+  else if (menu == 1) {  // scan mode
     display.display();
     display.drawBitmap(4, 5, bot, 50, 64, 1);
     display.fillRoundRect(63, 32, 62, 25, 10, 1);
@@ -557,95 +433,92 @@ void loop() {
     display.print("Scan");
     display.display();
 
-    bool modeteset = 1;
-
-    if (digitalRead(pbte) == 0) {
+    // Wait for pbte press to ENTER scanning mode
+    if (digitalRead(pbte) == LOW) {
       delay(200);  // debounce
-      while (digitalRead(pbte) == 0)
-        ;  // wait for release
-      modeteset = 0;
 
-      while (modeteset == 0) {
+      bool scanning = true;
+      insstep = 0;  // Optional: Reset the instruction counter when starting a new scan session
+      display.clearDisplay();
+      display.setCursor(0, 20);
+      display.print("Scanning...");
+      display.display();
+      delay(500);
+
+      while (scanning) {
+        // Read color sensor continuously
         getsensor();
-        delay(100);
+        int current_cmd = compare();
 
-        display.setTextSize(1);
-        display.setTextColor(1);
-        display.setTextWrap(false);
-        display.setCursor(21, 8);
-        display.print(int(red));
-
-        display.setCursor(58, 8);
-        display.print(int(green));
-
-        display.setCursor(97, 8);
-        display.print(int(blue));
-
-        display.setCursor(8, 8);
-        display.print("R:");
-        display.setCursor(46, 8);
-        display.print("G:");
-        display.setCursor(86, 8);
-        display.print("B:");
-
-        display.setCursor(7, 30);
-        switch (compare()) {
-          case 0:
-            display.print("Not detected");
-            break;
-          case 1:
-            display.print("Start");
-            break;
-          case 2:
-            drawlurus();
-            break;
-          case 3:
-            drawki();
-            break;
-          case 4:
-            drawka();
-            break;
-          case 5:
-            drawspin();
-            break;
-          case 6:
-            display.print("Stop");
-            break;
-        }
-        display.display();
-        delay(200);
+        // Display visual feedback based on current sensor reading
         display.clearDisplay();
+        switch (current_cmd) {
+          case 2:         // Lurus
+            drawlurus();  // This function already calls display.display()
+            break;
+          case 3:      // Kiri
+            drawki();  // This function already calls display.display()
+            break;
+          case 4:      // Kanan
+            drawka();  // This function already calls display.display()
+            break;
+          case 5:        // Putar balik
+            drawspin();  // This function already calls display.display()
+            break;
+          case 1:  // Start (optional visual)
+            display.setCursor(20, 25);
+            display.print("Start");
+            display.display();  // Manually call display for text
+            break;
+          case 6:  // Stop
+            display.setCursor(20, 25);
+            display.print("STOP");
+            display.display();  // Manually call display for text
+            break;
+          default:  // Not detected (0) or other
+            display.setCursor(10, 25);
+            display.print("Not Detected");
+            display.display();  // Manually call display for text
+            break;
+        }
 
-        if (digitalRead(pbki) == 0) {
-          getsensor();
-          delay(100);
-          intoarray(compare());
-          Serial.print("R: ");
-          Serial.println(red);
-          Serial.print("G: ");
-          Serial.println(green);
-          Serial.print("B: ");
-          Serial.println(blue);
-          Serial.println("");
-          Serial.println(compare());
-          Serial.println("");
-          for (int i = 0; i < 20; i++) {
-            Serial.print(ins[i]);
-            Serial.print("");
+        // Check if pbte is pressed to SAVE the CURRENT command
+        if (digitalRead(pbte) == LOW) {
+          delay(200);  // debounce
+
+          if (current_cmd == 0 || current_cmd == 6) {
+            // Exit scanning mode if saving Stop (6) or Not Detected (0)
+            scanning = false;
+            display.clearDisplay();
+            display.setCursor(10, 25);
+            display.print("Scan Done");
+            display.display();
+            delay(800);
+          } else {
+            // Save the currently detected valid command (1-5)
+            intoarray(current_cmd);
+            Serial.print("Saved: ");
+            Serial.println(current_cmd);
+
+            // Optional: Show confirmation on OLED
+            display.clearDisplay();
+            display.setCursor(0, 20);
+            display.print("Saved! (");
+            display.print(insstep);  // Show current count
+            display.print(")");
+            display.display();
+            for (int i = 0; i < 50; i++) {
+              Serial.print(ins[i]);
+              Serial.print("");
+            }
+            delay(400);
           }
-          Serial.println("");
-          display.print("SAVED");
-          delay(1000);
         }
-        if (digitalRead(pbka) == 0) {
-          modeteset = 1;
-          break;
-        }
-      }
-    }
-  }
 
-
+        delay(100);  // prevent excessive CPU use
+      }              // End of 'while (scanning)' loop
+    }                // End of 'if (pbte pressed to enter scan)'
+  }                  // End of 'else if (menu == 1)'
 
   else if (menu == 2) {  //tune
     display.display();
@@ -673,16 +546,17 @@ void loop() {
 
     while (modetest == 0) {
 
+
       if (digitalRead(pbka) == 0) {
         display.clearDisplay();
         select++;
-        delay(200);
+        delay(50);
       }
 
       else if (digitalRead(pbki) == 0) {
         display.clearDisplay();
         select--;
-        delay(200);
+        delay(50);
       }
 
       if (select < 0) {
@@ -695,9 +569,7 @@ void loop() {
 
       display.setTextSize(1);
 
-      if (select == 0) {  //cek rgb
-        while (digitalRead(pbte) == LOW)
-          ;  // wait for button release
+      if (select == 0) {
         display.clearDisplay();
 
         display.setTextColor(1);
@@ -715,135 +587,9 @@ void loop() {
         display.print("Back");
 
         display.display();
-
-        if (digitalRead(pbte) == 0) {
-          delay(20);
-          while (digitalRead(pbte) == LOW)
-            ;  // wait for button release
-
-          // Start RGB configuration mode
-          int rgbIndex = 0;
-          int rgbMode = 0;  // 0 = configuring, 1 = done
-
-          while (rgbMode == 0) {
-            display.clearDisplay();
-
-            // Show which RGB array we're configuring
-            display.setTextColor(1);
-            display.setTextSize(1);
-            display.setCursor(10, 10);
-
-            switch (rgbIndex) {
-              case 0:
-                display.print("Configuring START");
-                break;
-              case 1:
-                display.print("Configuring LURUS");
-                break;
-              case 2:
-                display.print("Configuring KIRI");
-                break;
-              case 3:
-                display.print("Configuring KANAN");
-                break;
-              case 4:
-                display.print("Configuring PUTAR");
-                display.setCursor(10, 20);
-                display.print("BALIK");
-                display.setCursor(10, 10);
-                break;
-              case 5:
-                display.print("Configuring STOP");
-                break;
-            }
-
-            display.setCursor(10, 25);
-            display.print("Press button to capture");
-
-            display.setCursor(10, 40);
-            display.print("RGB: ");
-            display.print(red);
-            display.print(",");
-            display.print(green);
-            display.print(",");
-            display.print(blue);
-
-            display.display();
-
-            // Check if button is pressed to capture RGB values
-            if (digitalRead(pbte) == 0) {
-              delay(50);  // debounce
-              while (digitalRead(pbte) == LOW)
-                ;  // wait for release
-
-              // Get sensor readings
-              getsensor();
-              delay(100);
-
-              // Store values in the current RGB array
-              switch (rgbIndex) {
-                case 0:
-                  valstart[0] = red;
-                  valstart[1] = green;
-                  valstart[2] = blue;
-                  break;
-                case 1:
-                  vallurus[0] = red;
-                  vallurus[1] = green;
-                  vallurus[2] = blue;
-                  break;
-                case 2:
-                  valkiri[0] = red;
-                  valkiri[1] = green;
-                  valkiri[2] = blue;
-                  break;
-                case 3:
-                  valkanan[0] = red;
-                  valkanan[1] = green;
-                  valkanan[2] = blue;
-                  break;
-                case 4:
-                  valputlik[0] = red;
-                  valputlik[1] = green;
-                  valputlik[2] = blue;
-                  break;
-                case 5:
-                  valstop[0] = red;
-                  valstop[1] = green;
-                  valstop[2] = blue;
-                  break;
-              }
-
-              Serial.print("Updated RGB ");
-              Serial.print(rgbIndex);
-              Serial.print(": ");
-              Serial.print(red);
-              Serial.print(",");
-              Serial.print(green);
-              Serial.print(",");
-              Serial.print(blue);
-              Serial.println();
-
-              // Move to next RGB array
-              rgbIndex++;
-              if (rgbIndex >= 6) {
-                rgbMode = 1;  // Exit configuration mode
-              }
-            }
-
-            delay(50);
-          }
-
-          // Configuration complete
-          display.clearDisplay();
-          display.setCursor(10, 25);
-          display.print("RGB Config Complete!");
-          display.display();
-          delay(1000);
-        }
       }
 
-      else if (select == 1) {  //cek motor
+      else if (select == 1) {
         display.clearDisplay();
 
         display.setTextColor(1);
@@ -923,7 +669,6 @@ void loop() {
               if (digitalRead(pbki) == 0) {
                 leftscan--;
               }
-              delay(300);
               break;
             case 1:
               display.setCursor(24, 5);
@@ -964,7 +709,6 @@ void loop() {
               if (digitalRead(pbki) == 0) {
                 rightscan--;
               }
-              delay(300);
               break;
             case 2:
               display.setCursor(24, 5);
@@ -1005,7 +749,6 @@ void loop() {
               if (digitalRead(pbki) == 0) {
                 leftrun--;
               }
-              delay(300);
               break;
             case 3:
               display.setCursor(24, 5);
@@ -1046,7 +789,6 @@ void loop() {
               if (digitalRead(pbki) == 0) {
                 rightrun--;
               }
-              delay(300);
               break;
             case 4:
               display.setCursor(24, 5);
@@ -1085,11 +827,12 @@ void loop() {
               }
               break;
           }
+          delay(200);
         }
         delay(300);
       }
 
-      else if (select == 2) {  //back
+      else if (select == 2) {
         display.clearDisplay();
 
         display.setTextColor(1);
@@ -1107,34 +850,15 @@ void loop() {
         display.print("Back");
 
         display.display();
-        if (digitalRead(pbki) == 0) {
+        if (digitalRead(pbte) == 0) {
           display.clearDisplay();
-          getsensor();
-          delay(100);
-          intoarray(compare());
-          Serial.print("R: ");
-          Serial.println(red);
-          Serial.print("G: ");
-          Serial.println(green);
-          Serial.print("B: ");
-          Serial.println(blue);
-          Serial.println("");
-          Serial.println(compare());
-          Serial.println("");
-          for (int i = 0; i < 20; i++) {
-            Serial.print(ins[i]);
-            Serial.print("");
-          }
-          Serial.println("");
-          delay(500);
+          modetest = 1;
         }
-        modetest = 1;
+        delay(200);
       }
+      delay(200);
     }
-    delay(200);
   }
-
-
 
 
   else if (menu == 3) {  //test
@@ -1286,6 +1010,24 @@ void loop() {
 
 
 void scan() {
+  getsensor();
+  delay(100);
+  intoarray(compare());
+  Serial.print("R: ");
+  Serial.println(red);
+  Serial.print("G: ");
+  Serial.println(green);
+  Serial.print("B: ");
+  Serial.println(blue);
+  Serial.println("");
+  Serial.println(compare());
+  Serial.println("");
+  for (int i = 0; i < 50; i++) {
+    Serial.print(ins[i]);
+    Serial.print("");
+  }
+  Serial.println("");
+  delay(500);
 }
 
 void getsensor() {
@@ -1295,19 +1037,18 @@ void getsensor() {
   tcs.setInterrupt(true);  // turn off LED
 }
 
-
 int compare() {
-  if (ranging(red, 154, 10, 10) && ranging(green, 54, 10, 10) && ranging(blue, 75, 10, 10)) {  //start
+  if (ranging(red, 141, 10, 10) && ranging(green, 51, 10, 10) && ranging(blue, 68, 10, 10)) {  //start
     return (1);
   } else if (ranging(red, 45, 10, 10) && ranging(green, 92, 10, 10) && ranging(blue, 111, 10, 10)) {  //lurus
     return (2);
-  } else if (ranging(red, 104, 10, 10) && ranging(green, 102, 10, 10) && ranging(blue, 55, 10, 10)) {  //kiri
+  } else if (ranging(red, 97, 10, 10) && ranging(green, 103, 10, 10) && ranging(blue, 53, 10, 10)) {  //kiri
     return (3);
-  } else if (ranging(red, 159, 10, 10) && ranging(green, 63, 10, 10) && ranging(blue, 34, 10, 10)) {  //kanan
+  } else if (ranging(red, 161, 10, 10) && ranging(green, 59, 10, 10) && ranging(blue, 34, 10, 10)) {  //kanan
     return (4);
-  } else if (ranging(red, 208, 10, 10) && ranging(green, 31, 10, 10) && ranging(blue, 35, 10, 10)) {  //putar balik
+  } else if (ranging(red, 210, 10, 10) && ranging(green, 33, 10, 10) && ranging(blue, 34, 10, 10)) {  //putar balik
     return (5);
-  } else if (ranging(red, 148, 10, 10) && ranging(green, 62, 10, 10) && ranging(blue, 52, 10, 10)) {  //stop
+  } else if (ranging(red, 149, 10, 10) && ranging(green, 59, 10, 10) && ranging(blue, 49, 10, 10)) {  //stop
     return (6);
   } else {
     return (0);
