@@ -31,8 +31,8 @@ const int pbki = 13;
 const int pbte = 12;
 const int pbka = 14;
 
-int rightrun = 110;
-int leftrun = 100;
+int rightrun = 100;
+int leftrun = 110;
 int rightscan = 80;
 int leftscan = 80;
 
@@ -283,7 +283,28 @@ static const unsigned char putlik[] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+static const unsigned char stop[] PROGMEM = {
+  0x00, 0x3f, 0xf0, 0x00, 0x00, 0x3f, 0xf0, 0x00, 0x03, 0xc0, 0x0f, 0x00, 0x03, 0xc0, 0x0f,
+  0x00, 0x0c, 0x00, 0x00, 0xc0, 0x0c, 0x00, 0x00, 0xc0, 0x30, 0x00, 0x00, 0x30, 0x30, 0x00,
+  0x00, 0x30, 0x30, 0xff, 0xfc, 0x30, 0x30, 0xff, 0xfc, 0x30, 0xc0, 0xc0, 0x0c, 0x0c, 0xc0,
+  0xc0, 0x0c, 0x0c, 0xc0, 0xc0, 0x0c, 0x0c, 0xc0, 0xc0, 0x0c, 0x0c, 0xc0, 0xc0, 0x0c, 0x0c,
+  0xc0, 0xc0, 0x0c, 0x0c, 0xc0, 0xc0, 0x0c, 0x0c, 0xc0, 0xc0, 0x0c, 0x0c, 0xc0, 0xc0, 0x0c,
+  0x0c, 0xc0, 0xc0, 0x0c, 0x0c, 0x30, 0xff, 0xfc, 0x30, 0x30, 0xff, 0xfc, 0x30, 0x30, 0x00,
+  0x00, 0x30, 0x30, 0x00, 0x00, 0x30, 0x0c, 0x00, 0x00, 0xc0, 0x0c, 0x00, 0x00, 0xc0, 0x03,
+  0xc0, 0x0f, 0x00, 0x03, 0xc0, 0x0f, 0x00, 0x00, 0x3f, 0xf0, 0x00, 0x00, 0x3f, 0xf0, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
 
+static const unsigned char start[] PROGMEM = {
+  0x00, 0x3f, 0xf0, 0x00, 0x00, 0x3f, 0xf0, 0x00, 0x03, 0xc0, 0x0f, 0x00, 0x03, 0xc0, 0x0f, 0x00, 0x0c, 0x00,
+  0x00, 0xc0, 0x0c, 0x00, 0x00, 0xc0, 0x30, 0x00, 0x00, 0x30, 0x30, 0x00, 0x00, 0x30, 0x30, 0xf0, 0x00, 0x30,
+  0x30, 0xf0, 0x00, 0x30, 0xc0, 0xcf, 0xc0, 0x0c, 0xc0, 0xcf, 0xc0, 0x0c, 0xc0, 0xc0, 0x3c, 0x0c, 0xc0, 0xc0,
+  0x3c, 0x0c, 0xc0, 0xc0, 0x03, 0xcc, 0xc0, 0xc0, 0x03, 0xcc, 0xc0, 0xc0, 0x3c, 0x0c, 0xc0, 0xc0, 0x3c, 0x0c,
+  0xc0, 0xcf, 0xc0, 0x0c, 0xc0, 0xcf, 0xc0, 0x0c, 0x30, 0xf0, 0x00, 0x30, 0x30, 0xf0, 0x00, 0x30, 0x30, 0x00,
+  0x00, 0x30, 0x30, 0x00, 0x00, 0x30, 0x0c, 0x00, 0x00, 0xc0, 0x0c, 0x00, 0x00, 0xc0, 0x03, 0xc0, 0x0f, 0x00,
+  0x03, 0xc0, 0x0f, 0x00, 0x00, 0x3f, 0xf0, 0x00, 0x00, 0x3f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00
+};
 
 void setup() {
   Serial.begin(115200);
@@ -329,43 +350,42 @@ void setup() {
 
 
   display.clearDisplay();
-  /*
+
   display.drawBitmap(0, 0, logstemba, 128, 64, WHITE);
   display.display();
   delay(3000);
   display.clearDisplay();
   display.display();
-  
+
   display.drawBitmap(0, 0, logmeka, 128, 64, WHITE);
   display.display();
   delay(3000);
   display.clearDisplay();
   display.display();
 
-  display.setTextSize(1); // Draw 2X-scale text
+  display.setTextSize(1);  // Draw 2X-scale text
   display.setTextColor(WHITE);
   display.setCursor(10, 0);
 
-  for(int i = 0; i<5; i++){
-  display.print("loading.");
-  display.display();
-  delay(500);
-  display.clearDisplay();
-  display.setCursor(10, 0);
+  for (int i = 0; i < 5; i++) {
+    display.print("loading.");
+    display.display();
+    delay(500);
+    display.clearDisplay();
+    display.setCursor(10, 0);
 
-  display.print("loading..");
-  display.display();
-  delay(500);
-  display.clearDisplay();
-  display.setCursor(10, 0);
+    display.print("loading..");
+    display.display();
+    delay(500);
+    display.clearDisplay();
+    display.setCursor(10, 0);
 
-  display.print("loading...");
-  display.display();
-  delay(500);
-  display.clearDisplay();
-  display.setCursor(10, 0);
+    display.print("loading...");
+    display.display();
+    delay(500);
+    display.clearDisplay();
+    display.setCursor(10, 0);
   }
-  */
 }
 
 
@@ -388,39 +408,272 @@ void loop() {
     menu = 0;
   }
 
-  if (menu == 0) {  //play
-
-    display.display();
-
+  else if (menu == 0) {  // play mode - ENCODER BASED - INVERTED FORWARD/BACKWARD DIRECTION, RUN SPEEDS
     display.drawBitmap(4, 5, bot, 50, 64, 1);
-
     display.fillRoundRect(63, 8, 62, 25, 10, 1);
-
-    display.setTextColor(0);
+    display.setTextColor(0);  // Selected text is black on white
     display.setTextSize(2);
     display.setTextWrap(false);
     display.setCursor(71, 13);
     display.print("Play");
-
-    display.setTextColor(1);
+    display.setTextColor(1);  // Unselected text is white on black
     display.setCursor(71, 37);
     display.print("Scan");
     display.display();
 
-    /*
-    if (digitalRead(pbte) == 0) {
-      modetest = 0;
-    }
-    int select = 0;
+    if (digitalRead(pbte) == LOW) {
+      delay(200);  // Debounce
 
-    while (modetest == 0) {
-    }
-    */
+      display.clearDisplay();
+      display.setCursor(10, 25);
+      display.print("Playing...");
+      display.display();
+      delay(500);
 
-  }
+      bool playing = true;
+      int current_step = 0;  // Index for the instruction array
+
+      while (playing && current_step < insstep) {
+        int instruction = ins[current_step];
+        Serial.print("Executing step ");
+        Serial.print(current_step);
+        Serial.println(":");
+
+        switch (instruction) {
+          case 1:  // Start
+            Serial.println("  Start signal received.");
+            drawsta();
+            // Could be a no-op, or signal the start of the sequence
+            // Optional: Add a short beep or delay here if needed
+            break;  // Move to next instruction immediately
+
+          case 2:  // Lurus (Go Straight - INVERTED: Both motors backward)
+            Serial.println("  Going straight (Encoder-based, target 60).");
+            drawlurus();  // Optional: Show the icon during movement
+
+            // Reset encoders directly
+            left_count = 0;
+            right_count = 0;
+
+            // Start moving motors backward (INVERTED LOGIC using run speeds)
+            // Original test: analogWrite(16, 0); analogWrite(17, rightrun); analogWrite(18, leftrun); analogWrite(19, 0);
+            // Inverted: Left motor backward (pin 18 on, pin 19 off), Right motor backward (pin 16 on, pin 17 off)
+            analogWrite(16, rightrun);  // motor in1-motor1 (Right motor backward pin) - ON (moves motor backward)
+            analogWrite(17, 0);         // motor in2-motor1 (Right motor forward pin) - OFF
+            analogWrite(18, 0);         // motor in3-motor2 (Left motor forward pin) - ON (moves motor backward)
+            analogWrite(19, leftrun);   // motor in4-motor2 (Left motor backward pin) - OFF
+
+            // Wait until the average encoder count reaches the target (60)
+            // Or until manual stop is pressed
+            // Note: Since motors are running backward, encoder counts will likely go negative.
+            // You might need to adjust the logic based on how your encoders count direction.
+            // For now, assuming they count backward as negative.
+            Serial.println(right_count);
+            Serial.println(left_count);
+            while ((left_count + right_count) / 2 < 40) {  // Use the hardcoded value -60 (or adjust) for backward movement
+              // Optional: Check for manual stop during movement
+              if (digitalRead(pbte) == LOW) {
+                Serial.println("Manual stop pressed during Lurus.");
+                delay(200);  // Debounce
+                // Stop motors directly
+                analogWrite(16, 0);
+                analogWrite(17, 0);
+                analogWrite(18, 0);
+                analogWrite(19, 0);
+                playing = false;  // Exit the main play loop
+                break;            // Exit the movement loop
+              }
+              delay(10);  // Small delay to prevent excessive CPU usage
+              Serial.println(right_count);
+              Serial.println(left_count);
+            }
+            if (!playing) break;  // Exit main loop if stopped manually
+
+            // Stop motors directly after reaching target or stopping manually
+            analogWrite(16, 0);
+            analogWrite(17, 0);
+            analogWrite(18, 0);
+            analogWrite(19, 0);
+
+            Serial.println("  Straight movement (60) complete.");
+            break;  // Move to next instruction
+
+          case 3:  // Kiri (Turn Left - INVERTED: Right motor backward, Left motor off)
+            Serial.println("  Turning left (Encoder-based, target 30).");
+            drawki();  // Show the icon during turn
+
+            // Reset encoders directly
+            left_count = 0;
+            right_count = 0;
+
+            // Start turning motors: Right motor backward, Left motor off (INVERTED LOGIC using run speed)
+            // Original test: analogWrite(16, 0); analogWrite(17, rightscan); analogWrite(18, 0); analogWrite(19, 0); (Right forward, Left off)
+            // Inverted: Right motor backward (16=rightrun, 17=0), Left motor off (18=0, 19=0)
+            analogWrite(16, rightrun);  // motor in1-motor1 (Right motor backward pin) - ON (moves motor backward)
+            analogWrite(17, 0);         // motor in2-motor1 (Right motor forward pin) - OFF
+            analogWrite(18, 0);         // motor in3-motor2 (Left motor forward pin) - OFF
+            analogWrite(19, 0);         // motor in4-motor2 (Left motor backward pin) - off
+
+            // Wait until right encoder moves backward by ~30 counts (left stays near 0)
+            // Assuming turning involves one motor going backward and the other stays still or moves slightly
+            while (right_count < 90) {  // Use hardcoded turn count for the moving wheel (negative for backward)
+              if (digitalRead(pbte) == LOW) {
+                Serial.println("Manual stop pressed during Kiri.");
+                delay(200);
+                analogWrite(16, 0);
+                analogWrite(17, 0);
+                analogWrite(18, 0);
+                analogWrite(19, 0);
+                playing = false;
+                break;
+              }
+              delay(10);
+              Serial.println(right_count);
+              Serial.println(left_count);
+            }
+            if (!playing) break;
+
+            analogWrite(16, 0);
+            analogWrite(17, 0);
+            analogWrite(18, 0);
+            analogWrite(19, 0);
+
+            Serial.println("  Left turn complete.");
+            break;
+
+          case 4:  // Kanan (Turn Right - INVERTED: Left motor backward, Right motor off)
+            Serial.println("  Turning right (Encoder-based, target 30).");
+            drawka();  // Show the icon during turn
+
+            // Reset encoders directly
+            left_count = 0;
+            right_count = 0;
+
+            // Start turning motors: Left motor backward, Right motor off (INVERTED LOGIC using run speed)
+            // Original test: analogWrite(16, 0); analogWrite(17, 0); analogWrite(18, leftscan); analogWrite(19, 0); (Left forward, Right off)
+            // Inverted: Left motor backward (18=0, 19=leftrun), Right motor off (16=0, 17=0)
+            analogWrite(16, 0);        // motor in1-motor1 (Right motor backward pin) - OFF
+            analogWrite(17, 0);        // motor in2-motor1 (Right motor forward pin) - off
+            analogWrite(18, 0);        // motor in3-motor2 (Left motor forward pin) - OFF
+            analogWrite(19, leftrun);  // motor in4-motor2 (Left motor backward pin) - ON (moves motor backward)
+
+            // Wait until left encoder moves backward by ~30 counts (right stays near 0)
+            while (left_count < 90) {  // Use hardcoded turn count for the moving wheel (negative for backward)
+              if (digitalRead(pbte) == LOW) {
+                Serial.println("Manual stop pressed during Kanan.");
+                delay(200);
+                analogWrite(16, 0);
+                analogWrite(17, 0);
+                analogWrite(18, 0);
+                analogWrite(19, 0);
+                playing = false;
+                break;
+              }
+              delay(10);
+              Serial.println(right_count);
+              Serial.println(left_count);
+            }
+            if (!playing) break;
+
+            analogWrite(16, 0);
+            analogWrite(17, 0);
+            analogWrite(18, 0);
+            analogWrite(19, 0);
+
+            Serial.println("  Right turn complete.");
+            break;
+
+          case 5:  // Putar balik (U-turn - INVERTED: Left motor forward, Right motor backward - spinning)
+            Serial.println("  U-turn (Encoder-based, target 45 per motor).");
+            drawspin();  // Show the icon during turn
+
+            // Reset encoders directly
+            left_count = 0;
+            right_count = 0;
+
+            // Start turning motors for U-turn: Left motor forward, Right motor backward (INVERTED SPIN LOGIC using run speeds)
+            // Original test: analogWrite(16, 0); analogWrite(17, leftscan); analogWrite(18, 0); analogWrite(19, rightscan); (Left backward, Right forward)
+            // Inverted: Left motor forward (18=leftrun, 19=0), Right motor backward (16=rightrun, 17=0)
+            analogWrite(16, rightrun);  // motor in1-motor1 (Right motor backward pin) - ON (moves motor backward)
+            analogWrite(17, 0);         // motor in2-motor1 (Right motor forward pin) - OFF
+            analogWrite(18, leftrun);   // motor in3-motor2 (Left motor forward pin) - ON (moves motor forward)
+            analogWrite(19, 0);         // motor in4-motor2 (Left motor backward pin) - backward
+
+            // Wait until left encoder moves forward by ~45 counts AND right encoder moves backward by ~45 counts
+            // You might need to adjust the target count for a full 180-degree turn
+            while ((left_count + right_count) / 2 < 70) {  // Use hardcoded U-turn count - adjust logic for inverted directions
+              if (digitalRead(pbte) == LOW) {
+                Serial.println("Manual stop pressed during Putar balik.");
+                delay(200);
+                analogWrite(16, 0);
+                analogWrite(17, 0);
+                analogWrite(18, 0);
+                analogWrite(19, 0);
+                playing = false;
+                break;
+              }
+              delay(10);
+              Serial.println(right_count);
+              Serial.println(left_count);
+            }
+            if (!playing) break;
+
+            analogWrite(16, 0);
+            analogWrite(17, 0);
+            analogWrite(18, 0);
+            analogWrite(19, 0);
+
+            Serial.println("  U-turn complete.");
+            break;
+
+          case 6:  // Stop
+            Serial.println("  Stop signal received. Stopping playback.");
+            drawstop();
+            // Ensure motors are stopped when Stop instruction is encountered
+            analogWrite(16, 0);
+            analogWrite(17, 0);
+            analogWrite(18, 0);
+            analogWrite(19, 0);
+            playing = false;  // Exit the play loop
+            break;
+
+          default:  // Unknown instruction
+            Serial.print("  Unknown instruction: ");
+            Serial.println(instruction);
+            // Optionally, stop playback or skip
+            break;
+        }
+
+        // Move to the next instruction only if playback is still active
+        if (playing) {
+          current_step++;
+        }
+
+        // Optional: Add a small delay between instructions
+        delay(100);
+      }  // End of 'while (playing && current_step < insstep)'
+
+      // Ensure motors are stopped when playback finishes or is stopped
+      analogWrite(16, 0);
+      analogWrite(17, 0);
+      analogWrite(18, 0);
+      analogWrite(19, 0);
+
+      display.clearDisplay();
+      display.setCursor(10, 25);
+      if (!playing) {  // Stopped by Stop instruction, manual button, or error
+        display.print("Playback Stopped");
+      } else {  // Reached end of array normally
+        display.print("Playback Done");
+      }
+      display.display();
+      delay(1000);  // Show result for a moment
+      display.clearDisplay();
+      display.display();
+    }  // End of 'if (pbte pressed to start playing)'
+  }    // End of 'else if (menu == 0)'
 
   else if (menu == 1) {  // scan mode
-    display.display();
     display.drawBitmap(4, 5, bot, 50, 64, 1);
     display.fillRoundRect(63, 32, 62, 25, 10, 1);
     display.setTextColor(1);
@@ -444,6 +697,9 @@ void loop() {
       display.print("Scanning...");
       display.display();
       delay(500);
+      for (int i = 0; i < 50; i++) {
+        ins[i] = 0;
+      }
 
       while (scanning) {
         // Read color sensor continuously
@@ -466,16 +722,13 @@ void loop() {
             drawspin();  // This function already calls display.display()
             break;
           case 1:  // Start (optional visual)
-            display.setCursor(20, 25);
-            display.print("Start");
-            display.display();  // Manually call display for text
+            drawsta();
             break;
           case 6:  // Stop
-            display.setCursor(20, 25);
-            display.print("STOP");
-            display.display();  // Manually call display for text
+            drawstop();
             break;
           default:  // Not detected (0) or other
+            display.setTextSize(1);
             display.setCursor(10, 25);
             display.print("Not Detected");
             display.display();  // Manually call display for text
@@ -517,8 +770,10 @@ void loop() {
 
         delay(100);  // prevent excessive CPU use
       }              // End of 'while (scanning)' loop
-    }                // End of 'if (pbte pressed to enter scan)'
-  }                  // End of 'else if (menu == 1)'
+      display.clearDisplay();
+      display.display();
+    }  // End of 'if (pbte pressed to enter scan)'
+  }    // End of 'else if (menu == 1)'
 
   else if (menu == 2) {  //tune
     display.display();
@@ -998,13 +1253,15 @@ void loop() {
       }
     }
   }
-
-  Serial.print("ki : ");
-  Serial.println(digitalRead(pbki));
-  Serial.print("te : ");
-  Serial.println(digitalRead(pbte));
-  Serial.print("ka : ");
-  Serial.println(digitalRead(pbka));
+  if (!digitalRead(pbki)) {
+    Serial.print("ki pressed ");
+  }
+  if (!digitalRead(pbte)) {
+    Serial.print("te pressed ");
+  }
+  if (!digitalRead(pbka)) {
+    Serial.print("ka pressed ");
+  }
   delay(300);
 }
 
@@ -1131,6 +1388,35 @@ void drawspin() {
 
   display.setCursor(4, 24);
   display.print("Turn around ");
+
+  display.display();
+}
+
+void drawstop() {
+  display.clearDisplay();
+
+  display.drawBitmap(75, 15, stop, 30, 32, 1);
+
+  display.setTextColor(1);
+  display.setTextSize(2);
+  display.setTextWrap(false);
+  display.setCursor(19, 23);
+  display.print("Stop");
+
+  display.display();
+}
+
+void drawsta() {
+  display.clearDisplay();
+
+
+  display.setTextColor(1);
+  display.setTextSize(2);
+  display.setTextWrap(false);
+  display.setCursor(9, 23);
+  display.print("Start");
+
+  display.drawBitmap(75, 15, start, 30, 32, 1);
 
   display.display();
 }
